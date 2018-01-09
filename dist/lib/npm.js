@@ -4,13 +4,27 @@ const tslib_1 = require("tslib");
 const cmd_1 = require("./cmd");
 const rp = require("request-promise");
 const semver_1 = require("semver");
-const npmCmd = cmd_1.getCmdInstance("npm");
+const which = require("which");
 const constant_1 = require("./common/constant");
+function getNpmCmd() {
+    var cmds = ["cnpm", "npm"];
+    var index = cmds.findIndex((value, index, arr) => which.sync(value, { nothrow: true }));
+    if (index != -1)
+        return cmds[index] + (process.platform === 'win32'
+            ? ".cmd"
+            : "");
+}
+const npmCmd = cmd_1.getCmdInstance(getNpmCmd());
 exports.default = new class {
-    getPkgJson(packageName) {
-        return rp.get(`${constant_1.NPM_REGISTRY_URL}/${packageName}`);
+    pkgJson(packageName) {
+        var res = rp.get(`${constant_1.NPM_REGISTRY_URL}/${packageName}`, {
+            transform: function (body, res) {
+                return JSON.parse(body);
+            }
+        });
+        return res;
     }
-    getLastVersions(json, limit = 10) {
+    lastVersions(json, limit = 10) {
         return Object
             .keys(json["versions"])
             .filter(ver => semver_1.valid(ver))
@@ -19,8 +33,34 @@ exports.default = new class {
     }
     versions(packageName, limit = 10) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            var data = yield this.getPkgJson(packageName);
-            return this.getLastVersions(data, limit);
+            var data = yield this.pkgJson(packageName);
+            return this.lastVersions(data, limit);
+        });
+    }
+    install(packageName, save, dev) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            const args = ['install'];
+            args.push(packageName);
+            if (save)
+                args.push('--save');
+            if (dev)
+                args.push('--save-dev');
+            yield npmCmd.runWithOutOutput(args);
+        });
+    }
+    uninstall(packageName) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield npmCmd.runWithOutOutput(['uninstall', packageName]);
+        });
+    }
+    versions2(packageName) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            var outstr = yield npmCmd.run(['view', packageName, 'versions', '--json']);
+            var versions = JSON.parse(outstr.toString());
+            return versions
+                .filter(ver => semver_1.valid(ver))
+                .sort(semver_1.rcompare)
+                .slice(0, 10);
         });
     }
     search(keyword, size = 2) {

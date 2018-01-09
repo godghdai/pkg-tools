@@ -4,12 +4,18 @@ const child_process_1 = require("child_process");
 const which = require("which");
 class CMD {
     constructor(cmd) {
-        this.cmd = cmd;
+        this._cmd = cmd;
+    }
+    get cmd() {
+        return this._cmd;
+    }
+    set cmd(value) {
+        which.sync(value);
+        this._cmd = value;
     }
     run(params) {
         return new Promise((resolve, reject) => {
-            console.log(this.cmd, params);
-            const child = child_process_1.spawn(this.cmd, params, {
+            const child = child_process_1.spawn(this._cmd, params, {
                 stdio: ['pipe', 'pipe', 'pipe']
             });
             child.on("err", reject);
@@ -26,7 +32,7 @@ class CMD {
     }
     runWithOutOutput(params) {
         return new Promise((resolve, reject) => {
-            child_process_1.spawn(this.cmd, params, { stdio: 'inherit' })
+            child_process_1.spawn(this._cmd, params, { stdio: 'inherit' })
                 .on("err", err => reject(false))
                 .on("close", () => resolve(true));
         });

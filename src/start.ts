@@ -1,7 +1,7 @@
 import git from "./lib/git";
 import npm from "./lib/npm";
 async function start(){
-  var result= await git.search('thinkjs')
+  var result= await npm.versions2('thinkjs')
   console.log(result);
 }
 

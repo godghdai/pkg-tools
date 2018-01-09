@@ -30,7 +30,7 @@ export default new class {
   }
 
   async clone(remote : string, path: string = "") :  Promise < boolean> {
-    await gitCmd.runWithOutOutput(['clone',remote]);
+    await gitCmd.runWithOutOutput(['clone',remote,path]);
     return true;
   }
 

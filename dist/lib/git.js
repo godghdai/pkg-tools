@@ -23,7 +23,7 @@ exports.default = new class {
     }
     clone(remote, path = "") {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield gitCmd.runWithOutOutput(['clone', remote]);
+            yield gitCmd.runWithOutOutput(['clone', remote, path]);
             return true;
         });
     }
