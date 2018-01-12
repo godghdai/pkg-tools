@@ -1,0 +1,112 @@
+[{
+        "package": {
+            "name": "thinkjs",
+            "scope": "unscoped",
+            "version": "3.2.6",
+            "description": "ThinkJS - Use full ES6/7 features to develop web applications",
+            "keywords": ["thinkjs", "framework", "web", "rest", "
+                restful ","
+                router ","
+                api ","
+                es6 ","
+                es7 ","
+                async ","
+                await ","
+                yield ","
+                websocket ","
+                generator - function ","
+                typescript "],"
+                date ":"
+                2017 - 12 - 14 T08: 46: 14.205 Z ","
+                links ":{"
+                npm ":"
+                https: //www.npmjs.com/package/thinkjs","hom
+                epage ":"
+                https: //github.com/thinkjs/thinkjs#readme","repository":"https://github.com/thinkjs/thinkjs","bugs":"https://github.com/thinkjs/thinkjs/issues"},"author":{"name":"welefen","email":"welefen@gma
+                il.com ","
+                username ":"
+                welefen "},"
+                publisher ":{"
+                username ":"
+                sijiecai ","
+                email ":"
+                sijie.cai @qq.com "},"
+                maintainers ":[{"
+                username ":"
+                lizheming ","
+                email ":"
+                i @imnerd.org "},{"
+                username ":"
+                lushijie ","
+                email ":"
+                lushijie1218
+                @126.com "},{"
+                username ":"
+                sijiecai ","
+                email ":"
+                sijie.cai @qq.com "},{"
+                username ":"
+                welefen ","
+                email ":"
+                welefen @gmail.com "},{"
+                username ":"
+                zhengqingxin ","
+                email ":"
+                362965772 @qq.com "}]},"
+                flags ":{"
+                insecure ":2},"
+                score ": { "final": 0.7283430594237904, "detail": { "quality": 0.9430082691079253, "popularity": 0.2756715265860635, "maintenance": 0.9970158411036874 } }, "searchScore": 100000.27
+            },
+            {
+                "package": {
+                    "name": "think-helper",
+                    "scope
+                    ":"
+                    unscoped ","
+                    version ":"
+                    1.0 .22 ","
+                    description ":"
+                    Helper
+                    for ThinkJS ","
+                    date ":"
+                    2017 - 09 - 19 T11: 04: 06.057 Z ","
+                    links ":{"
+                    npm ":"
+                    https: //www.npmjs.com/package/think-helper","homepage":"https://github.com/thinkjs/
+                        think - helper# readme ","
+                    repository ":"
+                    https: //github.com/thinkjs/think-helper","bugs":"https://github.com/thinkjs/think-helper/issues"},"author":{"name":"songguangyu","email":"522963130@qq.com","username
+                        ":"
+                    songguangyu "},"
+                    publisher ":{"
+                    username ":"
+                    sijiecai ","
+                    email ":"
+                    sijie.cai @qq.com "},"
+                    maintainers ":[{"
+                    username ":"
+                    lizheming ","
+                    email ":"
+                    i @imnerd.org "},{"
+                    username ":"
+                    lushijie ","
+                    email ":"
+                    lushijie1218 @126.com "},{"
+                    username ":"
+                    sijiecai ","
+                    email ":"
+                    sijie.cai @qq.com "},{"
+                    username ":"
+                    songguangyu ","
+                    email ":"
+                    522963130 @qq.com "},{"
+                    username ":"
+                    welefen ","
+                    email ":"
+                    welefen @gmail.com "}]},"
+                    score ":{"
+                    final ":0.6881364133437603,"
+                    detail ": { "quality": 0.9312655753332881, "popularity": 0.16801587822620964, "maintenance": 0.9998605238988587 }
+                },
+                "searchScore": 2.7391292e-12
+            }]

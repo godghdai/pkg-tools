@@ -1,40 +1,55 @@
-import {getCmdInstance} from "./cmd";
+import * as _ from 'lodash';
 import * as rp from 'request-promise';
+import {valid, rcompare, satisfies} from 'semver';
+
+import {getCmdInstance} from "./cmd";
 import {revsParse} from "./git_util/revs";
 import {urlParse} from "./git_util/url";
-import {valid, rcompare} from 'semver';
-import {DEFAULT_HTTP_HEADER,GITHUB_REPOSITORIES_URL} from "./common/constant";
+
+import {DEFAULT_HTTP_HEADER, GITHUB_REPOSITORIES_URL} from "./common/constant";
+
+import {IQueryablePackageInfo, PackageInfo} from "./Interface/IQueryable";
 
 const gitCmd = getCmdInstance("git");
 
-interface repositorie {
-  name: string,
-  full_name: string,
-  description: string,
-  clone_url: string,
-  homepage: string
-}
-
-export default new class {
-  async versions(remote : string, ref = true) : Promise < string[] > {
+class Git implements IQueryablePackageInfo {
+  async getVersions(remote : string, ref = true) : Promise < string[] > {
     var outstr = await gitCmd.run(['ls-remote', '-h', '-t', remote]);
     var {versions} = revsParse(outstr.toString());
     return Object
       .keys(versions)
       .filter(ver => valid(ver))
       .sort(rcompare)
-      //.slice(0, limit)
       .map(ver => ref
         ? versions[ver].ref
         : ver);
   }
 
-  async clone(remote : string, path: string = "") :  Promise < boolean> {
-    await gitCmd.runWithOutOutput(['clone',remote,path]);
+  async getVersionsByRange(remote : string, range : string) : Promise < string[] > {
+    var vers = await this.getVersions(remote);
+    return vers.filter(ver => satisfies(ver, range, true));
+  }
+
+  async getLastVersions(remote : string, limit : number = 10) {
+    var data = await this.getVersions(remote);
+    return data.slice(0, limit);
+  }
+
+  async clone(remote : string, path : string = "") : Promise < boolean > {
+    await gitCmd.runWithOutOutput(['clone', remote, path]);
     return true;
   }
 
-  async search(keyword : string) {
+  private static SearchResultConvert(items : any[]) : PackageInfo[] {
+    //_.pick(el, ["name", "full_name", "description", "clone_url", "homepage"]);
+    return items.map < PackageInfo > (item => {
+      let npm = "";
+      const {full_name: name, description: desc, clone_url: git} = item;
+      return {name, desc, git, npm};
+    });
+  }
+
+  async search(keyword : string, limit = 2) {
     var data = await rp({
       url: GITHUB_REPOSITORIES_URL,
       headers: DEFAULT_HTTP_HEADER,
@@ -42,17 +57,13 @@ export default new class {
         q: `${keyword} language:javascript`,
         sort: "stars",
         order: "desc",
-        per_page: 2,
+        per_page: limit,
         page: 1
       },
-      transform: function (body, res) {
-        return JSON.parse(body);
-      }
+      transform: (body, res) => JSON.parse(body)
     })
-    return data
-      .items
-      .map(function (el :repositorie) {
-        return {name: el.name, full_name: el.full_name, description: el.description, clone_url: el.clone_url, homepage: el.homepage}
-      });
+    return Git.SearchResultConvert(data.items);
   }
 }
+
+export default new Git();

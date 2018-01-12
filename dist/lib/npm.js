@@ -1,21 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const cmd_1 = require("./cmd");
 const rp = require("request-promise");
 const semver_1 = require("semver");
 const which = require("which");
+const cmd_1 = require("./cmd");
 const constant_1 = require("./common/constant");
 function getNpmCmd() {
     var cmds = ["cnpm", "npm"];
-    var index = cmds.findIndex((value, index, arr) => which.sync(value, { nothrow: true }));
+    var index = cmds.findIndex((value, index, arr) => !!which.sync(value, { nothrow: true }));
     if (index != -1)
         return cmds[index] + (process.platform === 'win32'
             ? ".cmd"
             : "");
 }
 const npmCmd = cmd_1.getCmdInstance(getNpmCmd());
-exports.default = new class {
+class Npm {
     pkgJson(packageName) {
         var res = rp.get(`${constant_1.NPM_REGISTRY_URL}/${packageName}`, {
             transform: function (body, res) {
@@ -31,7 +31,21 @@ exports.default = new class {
             .sort(semver_1.rcompare)
             .slice(0, limit);
     }
-    versions(packageName, limit = 10) {
+    getVersions(packageName) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            var outstr = yield npmCmd.run(['view', packageName, 'versions', '--json']);
+            var versions = JSON.parse(outstr.toString());
+            return versions.filter((ver) => semver_1.valid(ver)).sort(semver_1.rcompare);
+            // .slice(0, 10)
+        });
+    }
+    getVersionsByRange(packageName, range) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            var vers = yield this.getVersions(packageName);
+            return vers.filter(ver => semver_1.satisfies(ver, range, true));
+        });
+    }
+    getLastVersions(packageName, limit = 10) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var data = yield this.pkgJson(packageName);
             return this.lastVersions(data, limit);
@@ -53,14 +67,10 @@ exports.default = new class {
             yield npmCmd.runWithOutOutput(['uninstall', packageName]);
         });
     }
-    versions2(packageName) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            var outstr = yield npmCmd.run(['view', packageName, 'versions', '--json']);
-            var versions = JSON.parse(outstr.toString());
-            return versions
-                .filter(ver => semver_1.valid(ver))
-                .sort(semver_1.rcompare)
-                .slice(0, 10);
+    static SearchResultConvert(items) {
+        return items.map(item => {
+            const { name, description: desc, links: { repository: git, npm } } = item["package"];
+            return { name, desc, git, npm };
         });
     }
     search(keyword, size = 2) {
@@ -76,12 +86,11 @@ exports.default = new class {
                     popularity: 3,
                     maintenance: 0
                 },
-                transform: function (body, res) {
-                    return JSON.parse(body);
-                }
+                transform: (body, res) => JSON.parse(body)
             });
-            return data.objects;
+            return Npm.SearchResultConvert(data.objects);
         });
     }
-};
+}
+exports.default = new Npm();
 //# sourceMappingURL=npm.js.map

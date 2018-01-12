@@ -4,13 +4,12 @@
  *   fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)
  */
 // host[:/]n1/n2
+
+import {Iprop} from '../Interface/ICommon';
+
 var RE = /^([^:\/]+)[:\/](.+)$/i;
 
-export interface Map < T > {
-  [key : string]: T;
-}
-
-var HTTPS_HOSTS : Map < number > = {
+var HTTPS_HOSTS : Iprop < number > = {
   'github.com': 1,
   'gitcafe.com': 1,
   'gist.github.com': 1

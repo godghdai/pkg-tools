@@ -1,11 +1,11 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /**!
  * giturl - lib/giturl.js
  * Authors:
  *   fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)
  */
 // host[:/]n1/n2
+Object.defineProperty(exports, "__esModule", { value: true });
 var RE = /^([^:\/]+)[:\/](.+)$/i;
 var HTTPS_HOSTS = {
     'github.com': 1,

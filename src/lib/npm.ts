@@ -1,12 +1,16 @@
-import {getCmdInstance} from "./cmd";
 import * as rp from 'request-promise';
-import {valid, rcompare} from 'semver';
+import {valid, rcompare, satisfies} from 'semver';
 import * as which from 'which';
+
+import {getCmdInstance} from "./cmd";
+
 import {DEFAULT_HTTP_HEADER, NPM_REGISTRY_URL, NPM_SEARCH_URL} from "./common/constant";
+
+import {IQueryablePackageInfo, PackageInfo} from "./Interface/IQueryable";
 
 function getNpmCmd() {
   var cmds = ["cnpm", "npm"];
-  var index = cmds.findIndex((value, index, arr) => which.sync(value, {nothrow: true}));
+  var index = cmds.findIndex((value, index, arr) => !!which.sync(value, {nothrow: true}));
   if (index != -1)
     return cmds[index] + (process.platform === 'win32'
       ? ".cmd"
@@ -15,9 +19,9 @@ function getNpmCmd() {
 
 const npmCmd = getCmdInstance(getNpmCmd());
 
-export default new class {
+class Npm implements IQueryablePackageInfo {
 
-  pkgJson(packageName : string) {
+  public pkgJson(packageName : string) {
     var res = rp.get(`${NPM_REGISTRY_URL}/${packageName}`, {
       transform: function (body, res) {
         return JSON.parse(body);
@@ -26,7 +30,7 @@ export default new class {
     return res;
   }
 
-  lastVersions(json : any, limit = 10) {
+  private lastVersions(json : any, limit = 10) {
     return Object
       .keys(json["versions"])
       .filter(ver => valid(ver))
@@ -34,7 +38,19 @@ export default new class {
       .slice(0, limit)
   }
 
-  async versions(packageName : string, limit : number = 10) {
+  async getVersions(packageName : string) : Promise < string[] > {
+    var outstr = await npmCmd.run(['view', packageName, 'versions', '--json']);
+    var versions = JSON.parse(outstr.toString());
+    return versions.filter((ver : string) => valid(ver)).sort(rcompare)
+    // .slice(0, 10)
+  }
+
+  async getVersionsByRange(packageName : string, range : string) : Promise < string[] > {
+    var vers = await this.getVersions(packageName);
+    return vers.filter(ver => satisfies(ver, range, true));
+  }
+
+  async getLastVersions(packageName : string, limit : number = 10) : Promise < string[] > {
     var data = await this.pkgJson(packageName);
     return this.lastVersions(data, limit);
   }
@@ -54,13 +70,18 @@ export default new class {
     await npmCmd.runWithOutOutput(['uninstall', packageName]);
   }
 
-  async versions2(packageName : string) : Promise < string[] > {
-    var outstr = await npmCmd.run(['view', packageName, 'versions', '--json']);
-    var versions = JSON.parse(outstr.toString());
-    return versions
-      .filter(ver => valid(ver))
-      .sort(rcompare)
-      .slice(0, 10)
+  private static SearchResultConvert(items : any[]) : PackageInfo[] {
+    return items.map < PackageInfo > (item => {
+      const {
+        name,
+        description: desc,
+        links: {
+          repository: git,
+          npm
+        }
+      } = item["package"];
+      return {name, desc, git, npm};
+    });
   }
 
   async search(keyword : string, size = 2) {
@@ -75,11 +96,10 @@ export default new class {
         popularity: 3,
         maintenance: 0
       },
-      transform: function (body, res) {
-        return JSON.parse(body);
-      }
+      transform: (body, res) => JSON.parse(body);
     });
-    return data.objects;
+    return Npm.SearchResultConvert(data.objects);
 
   }
 }
+export default new Npm();
