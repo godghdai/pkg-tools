@@ -3,14 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const rp = require("request-promise");
 const chinese_1 = require("../util/chinese");
-const HEADERS_SIMPLE = {
-    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    'Host': 'm.fanyi.qq.com',
-    'Origin': 'http://m.fanyi.qq.com',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' +
-        'Chrome/63.0.3239.84 Safari/537.36',
-    'X-Requested-With': 'XMLHttpRequest'
-};
+const headers_1 = require("./headers");
 class Youdao {
     convertToResult(json) {
         return { from: json.sourceText, to: json.targetText };
@@ -31,7 +24,7 @@ class Youdao {
                     'longitude': 1,
                     'platform': 'H5'
                 },
-                headers: HEADERS_SIMPLE,
+                headers: headers_1.QQ_HEADERS_SIMPLE,
                 transform: (body, res) => JSON.parse(body)
             });
             return this.convertToResult(result);

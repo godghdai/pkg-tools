@@ -9,9 +9,9 @@ start2().catch(ex=>{
   console.log(ex);
 });
 
-import Youdao from './lib/translate/qq'
+import Youdao from './lib/translate/youdao'
 
-new Youdao().translate("中国").then(res=>{
+new Youdao().translate("中国d").then(res=>{
   console.log(res);
 }).catch(err => {
   console.log(err);

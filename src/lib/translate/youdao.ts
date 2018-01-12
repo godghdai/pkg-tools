@@ -1,25 +1,12 @@
 import * as rp from 'request-promise';
 import http = require('http');
 import * as request from 'request';
-import * as xtend from 'xtend';
 import {md5} from './md5';
 import {FileCookieStore} from './file-store';
 
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 
-const HEADERS_SIMPLE = {
-  'Host': 'fanyi.youdao.com',
-  'Origin': 'http://fanyi.youdao.com',
-  'Referer': 'http://fanyi.youdao.com/',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' +
-      'Chrome/63.0.3239.84 Safari/537.36'
-};
-
-const HEADERS_FORM = xtend({
-  'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-  'X-Requested-With': 'XMLHttpRequest'
-}, HEADERS_SIMPLE);
-
+import {YOUDAO_HEADERS_SIMPLE,YOUDAO_HEADERS_FORM} from "./headers";
 
 export default class Youdao implements ITranslate {
 
@@ -52,7 +39,7 @@ export default class Youdao implements ITranslate {
 
     var cookiejar=this.cookiejar;
     if(this.store.isExpired() || this.store.isEmpty()) {
-      await rp({method: 'GET', uri: 'http://fanyi.youdao.com/', jar: cookiejar, headers: HEADERS_SIMPLE});
+      await rp({method: 'GET', uri: 'http://fanyi.youdao.com/', jar: cookiejar, headers: YOUDAO_HEADERS_SIMPLE});
     }
 
     var {salt, sign} = Youdao.getSaltSign(keyword);
@@ -77,7 +64,7 @@ export default class Youdao implements ITranslate {
         'action': 'FY_BY_CLICKBUTTION',
         'typoResult': false
       },
-      headers: HEADERS_FORM,
+      headers: YOUDAO_HEADERS_FORM,
       transform: (body : any, res : http.IncomingMessage) => JSON.parse(body)
     });
     return this.convertToResult(result["translateResult"]);

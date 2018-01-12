@@ -3,14 +3,7 @@ import http = require('http');
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 import {isChinese} from "../util/chinese";
 
-const HEADERS_SIMPLE = {
-  'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-  'Host': 'm.fanyi.qq.com',
-  'Origin': 'http://m.fanyi.qq.com',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' +
-      'Chrome/63.0.3239.84 Safari/537.36',
-  'X-Requested-With': 'XMLHttpRequest'
-};
+import {QQ_HEADERS_SIMPLE} from "./headers";
 
 export default class Youdao implements ITranslate {
 
@@ -34,7 +27,7 @@ export default class Youdao implements ITranslate {
         'longitude': 1,
         'platform': 'H5'
       },
-      headers:HEADERS_SIMPLE,
+      headers: QQ_HEADERS_SIMPLE,
       transform: (body : any, res : http.IncomingMessage) => JSON.parse(body)
     });
     return this.convertToResult(result);

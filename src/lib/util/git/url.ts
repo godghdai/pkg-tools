@@ -5,7 +5,7 @@
  */
 // host[:/]n1/n2
 
-import {Iprop} from '../Interface/ICommon';
+import {Iprop} from '../../Interface/ICommon';
 
 var RE = /^([^:\/]+)[:\/](.+)$/i;
 
