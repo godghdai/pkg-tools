@@ -11,8 +11,8 @@ function start2() {
 start2().catch(ex => {
     console.log(ex);
 });
-const youdao_1 = require("./lib/translate/youdao");
-new youdao_1.default().translate("中国d").then(res => {
+const baidu_1 = require("./lib/translate/baidu");
+new baidu_1.default().translate("good morning dfdfd").then(res => {
     console.log(res);
 }).catch(err => {
     console.log(err);

@@ -6,7 +6,7 @@ import {FileCookieStore} from './file-store';
 
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 
-import {YOUDAO_HEADERS_SIMPLE,YOUDAO_HEADERS_FORM} from "./headers";
+import {YOUDAO_HEADERS_SIMPLE,YOUDAO_HEADERS_FORM} from "./common/headers";
 
 export default class Youdao implements ITranslate {
 

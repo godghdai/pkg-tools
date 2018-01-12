@@ -3,9 +3,9 @@ import http = require('http');
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 import {isChinese} from "../util/chinese";
 
-import {QQ_HEADERS_SIMPLE} from "./headers";
+import {QQ_HEADERS_SIMPLE} from "./common/headers";
 
-export default class Youdao implements ITranslate {
+export default class QQ implements ITranslate {
 
   convertToResult(json : any) : ITranslateResult {
     return {from: json.sourceText, to: json.targetText};

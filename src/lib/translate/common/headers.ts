@@ -15,6 +15,7 @@ export const QQ_HEADERS_SIMPLE = xtend({
 }, UserAgent, Form);
 
 
+
 export const YOUDAO_HEADERS_SIMPLE = xtend({
   'Host': 'fanyi.youdao.com',
   'Origin': 'http://fanyi.youdao.com',
@@ -22,4 +23,18 @@ export const YOUDAO_HEADERS_SIMPLE = xtend({
 }, UserAgent);
 
 export const YOUDAO_HEADERS_FORM = xtend({}, YOUDAO_HEADERS_SIMPLE, Form);
+
+
+
+export const BAIDU_HEADERS_SIMPLE = xtend({
+  'Host': 'fanyi.baidu.com',
+  'Origin': 'fanyi.baidu.com',
+  'Referer': 'fanyi.baidu.com'
+}, UserAgent);
+
+export const BAIDU_HEADERS_SIMPLE_PARMS =  xtend({}, BAIDU_HEADERS_SIMPLE, {
+  'Referer': 'http://fanyi.baidu.com/#zh/en/%E4%B8%AD%E5%9B%BDg'
+});
+
+export const BAIDU_HEADERS_SIMPLE_FORM = xtend({}, BAIDU_HEADERS_SIMPLE, Form);
 

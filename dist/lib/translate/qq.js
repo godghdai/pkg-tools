@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const rp = require("request-promise");
 const chinese_1 = require("../util/chinese");
-const headers_1 = require("./headers");
-class Youdao {
+const headers_1 = require("./common/headers");
+class QQ {
     convertToResult(json) {
         return { from: json.sourceText, to: json.targetText };
     }
@@ -31,5 +31,5 @@ class Youdao {
         });
     }
 }
-exports.default = Youdao;
+exports.default = QQ;
 //# sourceMappingURL=qq.js.map

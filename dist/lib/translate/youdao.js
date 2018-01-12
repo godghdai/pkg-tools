@@ -4,7 +4,7 @@ const tslib_1 = require("tslib");
 const rp = require("request-promise");
 const md5_1 = require("./md5");
 const file_store_1 = require("./file-store");
-const headers_1 = require("./headers");
+const headers_1 = require("./common/headers");
 class Youdao {
     constructor(cookies_save_path = "youdao_cookies.json") {
         this.store = new file_store_1.FileCookieStore(cookies_save_path);
