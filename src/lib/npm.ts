@@ -21,11 +21,9 @@ const npmCmd = getCmdInstance(getNpmCmd());
 
 class Npm implements IQueryablePackageInfo {
 
-  public pkgJson(packageName : string) {
+  public getPackageJson(packageName : string) {
     var res = rp.get(`${NPM_REGISTRY_URL}/${packageName}`, {
-      transform: function (body, res) {
-        return JSON.parse(body);
-      }
+      transform: (body, res) => JSON.parse(body)
     });
     return res;
   }
@@ -45,29 +43,14 @@ class Npm implements IQueryablePackageInfo {
     // .slice(0, 10)
   }
 
-  async getVersionsByRange(packageName : string, range : string) : Promise < string[] > {
-    var vers = await this.getVersions(packageName);
-    return vers.filter(ver => satisfies(ver, range, true));
-  }
-
   async getLastVersions(packageName : string, limit : number = 10) : Promise < string[] > {
-    var data = await this.pkgJson(packageName);
+    var data = await this.getPackageJson(packageName);
     return this.lastVersions(data, limit);
   }
 
-  async install(packageName : string, save : boolean, dev : boolean) {
-    const args = ['install'];
-    args.push(packageName)
-    if (save)
-      args.push('--save')
-    if (dev)
-      args.push('--save-dev')
-    await npmCmd.runWithOutOutput(args);
-
-  }
-
-  async uninstall(packageName : string) {
-    await npmCmd.runWithOutOutput(['uninstall', packageName]);
+  async getVersionsByRange(packageName : string, range : string) : Promise < string[] > {
+    var vers = await this.getVersions(packageName);
+    return vers.filter(ver => satisfies(ver, range, true));
   }
 
   private static SearchResultConvert(items : any[]) : PackageInfo[] {
@@ -84,22 +67,37 @@ class Npm implements IQueryablePackageInfo {
     });
   }
 
-  async search(keyword : string, size = 2) {
+  async search(keyword : string, limit = 2) : Promise < PackageInfo[] > {
     var data = await rp({
       url: NPM_SEARCH_URL,
       headers: DEFAULT_HTTP_HEADER,
       qs: {
         text: keyword,
         from: 0,
-        size,
+        size: limit,
         quality: 0,
         popularity: 3,
         maintenance: 0
       },
-      transform: (body, res) => JSON.parse(body);
+      transform: (body, res) => JSON.parse(body)
     });
     return Npm.SearchResultConvert(data.objects);
 
+  }
+
+  async install(packageName : string, save : boolean, dev : boolean) {
+    const args = ['install'];
+    args.push(packageName)
+    if (save)
+      args.push('--save')
+    if (dev)
+      args.push('--save-dev')
+    await npmCmd.runWithOutOutput(args);
+
+  }
+
+  async uninstall(packageName : string) {
+    await npmCmd.runWithOutOutput(['uninstall', packageName]);
   }
 }
 export default new Npm();

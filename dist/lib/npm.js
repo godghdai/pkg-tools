@@ -16,11 +16,9 @@ function getNpmCmd() {
 }
 const npmCmd = cmd_1.getCmdInstance(getNpmCmd());
 class Npm {
-    pkgJson(packageName) {
+    getPackageJson(packageName) {
         var res = rp.get(`${constant_1.NPM_REGISTRY_URL}/${packageName}`, {
-            transform: function (body, res) {
-                return JSON.parse(body);
-            }
+            transform: (body, res) => JSON.parse(body)
         });
         return res;
     }
@@ -39,16 +37,40 @@ class Npm {
             // .slice(0, 10)
         });
     }
+    getLastVersions(packageName, limit = 10) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            var data = yield this.getPackageJson(packageName);
+            return this.lastVersions(data, limit);
+        });
+    }
     getVersionsByRange(packageName, range) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var vers = yield this.getVersions(packageName);
             return vers.filter(ver => semver_1.satisfies(ver, range, true));
         });
     }
-    getLastVersions(packageName, limit = 10) {
+    static SearchResultConvert(items) {
+        return items.map(item => {
+            const { name, description: desc, links: { repository: git, npm } } = item["package"];
+            return { name, desc, git, npm };
+        });
+    }
+    search(keyword, limit = 2) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            var data = yield this.pkgJson(packageName);
-            return this.lastVersions(data, limit);
+            var data = yield rp({
+                url: constant_1.NPM_SEARCH_URL,
+                headers: constant_1.DEFAULT_HTTP_HEADER,
+                qs: {
+                    text: keyword,
+                    from: 0,
+                    size: limit,
+                    quality: 0,
+                    popularity: 3,
+                    maintenance: 0
+                },
+                transform: (body, res) => JSON.parse(body)
+            });
+            return Npm.SearchResultConvert(data.objects);
         });
     }
     install(packageName, save, dev) {
@@ -65,30 +87,6 @@ class Npm {
     uninstall(packageName) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield npmCmd.runWithOutOutput(['uninstall', packageName]);
-        });
-    }
-    static SearchResultConvert(items) {
-        return items.map(item => {
-            const { name, description: desc, links: { repository: git, npm } } = item["package"];
-            return { name, desc, git, npm };
-        });
-    }
-    search(keyword, size = 2) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            var data = yield rp({
-                url: constant_1.NPM_SEARCH_URL,
-                headers: constant_1.DEFAULT_HTTP_HEADER,
-                qs: {
-                    text: keyword,
-                    from: 0,
-                    size,
-                    quality: 0,
-                    popularity: 3,
-                    maintenance: 0
-                },
-                transform: (body, res) => JSON.parse(body)
-            });
-            return Npm.SearchResultConvert(data.objects);
         });
     }
 }

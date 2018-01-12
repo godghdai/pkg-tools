@@ -4,7 +4,7 @@ const tslib_1 = require("tslib");
 const rp = require("request-promise");
 const semver_1 = require("semver");
 const cmd_1 = require("./cmd");
-const revs_1 = require("./git_util/revs");
+const revs_1 = require("./util/git/revs");
 const constant_1 = require("./common/constant");
 const gitCmd = cmd_1.getCmdInstance("git");
 class Git {

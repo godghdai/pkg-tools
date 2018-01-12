@@ -3,8 +3,8 @@ import * as rp from 'request-promise';
 import {valid, rcompare, satisfies} from 'semver';
 
 import {getCmdInstance} from "./cmd";
-import {revsParse} from "./git_util/revs";
-import {urlParse} from "./git_util/url";
+import {revsParse} from "./util/git/revs";
+import {urlParse} from "./util/git/url";
 
 import {DEFAULT_HTTP_HEADER, GITHUB_REPOSITORIES_URL} from "./common/constant";
 
@@ -49,7 +49,7 @@ class Git implements IQueryablePackageInfo {
     });
   }
 
-  async search(keyword : string, limit = 2) {
+  async search(keyword : string, limit = 2) : Promise < PackageInfo[] > {
     var data = await rp({
       url: GITHUB_REPOSITORIES_URL,
       headers: DEFAULT_HTTP_HEADER,
@@ -61,7 +61,7 @@ class Git implements IQueryablePackageInfo {
         page: 1
       },
       transform: (body, res) => JSON.parse(body)
-    })
+    });
     return Git.SearchResultConvert(data.items);
   }
 }
