@@ -2,6 +2,7 @@ import * as rp from 'request-promise';
 import http = require('http');
 import * as request from 'request';
 import * as fse from 'fs-extra';
+import debug from 'debug';
 
 import {isChinese} from "../util/chinese";
 import {n as encode} from './baidu/encode';
@@ -29,19 +30,16 @@ export default class Baidu implements ITranslate {
   }
 
   async updateCookiesAndToken() {
-
     var exists = await fse.pathExists(BAIDU_CONFIG_PATH);
     var cookiejar = this.cookiejar;
-
     if (this.store.isExpired() || this.store.isEmpty() || !exists) {
-
       console.log("update...");
       await rp({method: 'GET', uri: 'http://fanyi.baidu.com', jar: cookiejar, headers: BAIDU_HEADERS_SIMPLE});
       var gtk_token_config = await rp({
         method: 'GET',
         jar: cookiejar,
         uri: 'http://fanyi.baidu.com/#zh/en/%E4%B8%AD%E5%9B%BDg',
-        transform: function (body : any, res : http.IncomingMessage) {
+        transform:(body : any, res : http.IncomingMessage)=>{
           return {
             'gtk': body.match(/window.gtk = '(.*)'/)[1],
             'token': body.match(/token: '(.*)',/)[1]
@@ -54,7 +52,6 @@ export default class Baidu implements ITranslate {
   }
 
   async translate(keyword : string) : Promise < ITranslateResult > {
-
     await this.updateCookiesAndToken();
     const gtk_token_config = await fse.readJson(BAIDU_CONFIG_PATH);
     const from = isChinese(keyword)
@@ -79,9 +76,7 @@ export default class Baidu implements ITranslate {
         'token': gtk_token_config.token
       },
       headers: BAIDU_HEADERS_SIMPLE_FORM,
-      transform: function (body : any, res : http.IncomingMessage) {
-        return JSON.parse(body);
-      }
+      transform:  (body : any, res : http.IncomingMessage)=>JSON.parse(body)
     });
     return this.convertToResult(result["trans_result"]);
 

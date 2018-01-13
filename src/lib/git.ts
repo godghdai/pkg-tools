@@ -25,9 +25,9 @@ class Git implements IQueryablePackageInfo {
         : ver);
   }
 
-  async getVersionsByRange(remote : string, range : string) : Promise < string[] > {
+  async getVersionsByRange(remote : string, range : string,limit:number=5) : Promise < string[] > {
     var vers = await this.getVersions(remote);
-    return vers.filter(ver => satisfies(ver, range, true));
+    return vers.filter(ver => satisfies(ver, range, true)).slice(0, limit);
   }
 
   async getLastVersions(remote : string, limit : number = 10) {

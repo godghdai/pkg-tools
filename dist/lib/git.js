@@ -21,10 +21,10 @@ class Git {
                 : ver);
         });
     }
-    getVersionsByRange(remote, range) {
+    getVersionsByRange(remote, range, limit = 5) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var vers = yield this.getVersions(remote);
-            return vers.filter(ver => semver_1.satisfies(ver, range, true));
+            return vers.filter(ver => semver_1.satisfies(ver, range, true)).slice(0, limit);
         });
     }
     getLastVersions(remote, limit = 10) {

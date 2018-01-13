@@ -22,7 +22,13 @@ const npmCmd = getCmdInstance(getNpmCmd());
 class Npm implements IQueryablePackageInfo {
 
   public getPackageJson(packageName : string) {
-    var res = rp.get(`${NPM_REGISTRY_URL}/${packageName}`, {
+    var res = rp({
+      url: `${NPM_REGISTRY_URL}/${packageName}`,
+      headers: {
+        "user-agent": "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHT" +
+        "ML, like Gecko) Chrome/63.0.3239.84 Mobile Safari/537.36",
+        'Host':'registry.cnpmjs.org'
+      },
       transform: (body, res) => JSON.parse(body)
     });
     return res;
@@ -43,14 +49,14 @@ class Npm implements IQueryablePackageInfo {
     // .slice(0, 10)
   }
 
-  async getLastVersions(packageName : string, limit : number = 10) : Promise < string[] > {
+  async getLastVersions(packageName : string, limit : number = 5) : Promise < string[] > {
     var data = await this.getPackageJson(packageName);
     return this.lastVersions(data, limit);
   }
 
-  async getVersionsByRange(packageName : string, range : string) : Promise < string[] > {
+  async getVersionsByRange(packageName : string, range : string,limit:number=5) : Promise < string[] > {
     var vers = await this.getVersions(packageName);
-    return vers.filter(ver => satisfies(ver, range, true));
+    return vers.filter(ver => satisfies(ver, range, true)).slice(0, limit);
   }
 
   private static SearchResultConvert(items : any[]) : PackageInfo[] {

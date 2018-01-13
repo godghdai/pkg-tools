@@ -28,7 +28,7 @@ class Baidu {
                     method: 'GET',
                     jar: cookiejar,
                     uri: 'http://fanyi.baidu.com/#zh/en/%E4%B8%AD%E5%9B%BDg',
-                    transform: function (body, res) {
+                    transform: (body, res) => {
                         return {
                             'gtk': body.match(/window.gtk = '(.*)'/)[1],
                             'token': body.match(/token: '(.*)',/)[1]
@@ -65,9 +65,7 @@ class Baidu {
                     'token': gtk_token_config.token
                 },
                 headers: headers_1.BAIDU_HEADERS_SIMPLE_FORM,
-                transform: function (body, res) {
-                    return JSON.parse(body);
-                }
+                transform: (body, res) => JSON.parse(body)
             });
             return this.convertToResult(result["trans_result"]);
         });

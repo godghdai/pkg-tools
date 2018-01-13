@@ -17,7 +17,13 @@ function getNpmCmd() {
 const npmCmd = cmd_1.getCmdInstance(getNpmCmd());
 class Npm {
     getPackageJson(packageName) {
-        var res = rp.get(`${constant_1.NPM_REGISTRY_URL}/${packageName}`, {
+        var res = rp({
+            url: `${constant_1.NPM_REGISTRY_URL}/${packageName}`,
+            headers: {
+                "user-agent": "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHT" +
+                    "ML, like Gecko) Chrome/63.0.3239.84 Mobile Safari/537.36",
+                'Host': 'registry.cnpmjs.org'
+            },
             transform: (body, res) => JSON.parse(body)
         });
         return res;
@@ -37,16 +43,16 @@ class Npm {
             // .slice(0, 10)
         });
     }
-    getLastVersions(packageName, limit = 10) {
+    getLastVersions(packageName, limit = 5) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var data = yield this.getPackageJson(packageName);
             return this.lastVersions(data, limit);
         });
     }
-    getVersionsByRange(packageName, range) {
+    getVersionsByRange(packageName, range, limit = 5) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var vers = yield this.getVersions(packageName);
-            return vers.filter(ver => semver_1.satisfies(ver, range, true));
+            return vers.filter(ver => semver_1.satisfies(ver, range, true)).slice(0, limit);
         });
     }
     static SearchResultConvert(items) {
