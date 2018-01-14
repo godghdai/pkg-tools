@@ -18,11 +18,6 @@ exports.builder = function (yargs : any) {
       describe: "'result limit"
     })
     .default('limit', 2)
-    .option('size', {
-      alias: 's',
-      describe: 'choose a size',
-      choices: ['xs', 's', 'm', 'l', 'xl']
-    })
 }
 
 exports.handler = function (argv : any) {
@@ -56,8 +51,8 @@ exports.handler = function (argv : any) {
         align: "center",
         color: "white"
       });
-
       var str1 = t1.render();
       console.log(str1);
+       argv._callback();
     })
 }

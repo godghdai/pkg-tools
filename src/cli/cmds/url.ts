@@ -13,8 +13,10 @@ exports.handler = function (argv : any) {
 
   getGitUrlByPackName(argv.packname).then(a => {
     console.log(a);
+    argv._callback();
   }).catch(ex => {
     console.log(ex);
+    argv._callback();
   });
 
 }

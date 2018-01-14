@@ -13,12 +13,7 @@ exports.builder = function (yargs) {
         alias: 'l',
         describe: "'result limit"
     })
-        .default('limit', 2)
-        .option('size', {
-        alias: 's',
-        describe: 'choose a size',
-        choices: ['xs', 's', 'm', 'l', 'xl']
-    });
+        .default('limit', 2);
 };
 exports.handler = function (argv) {
     if (argv.pkgname == "")
@@ -49,6 +44,7 @@ exports.handler = function (argv) {
         });
         var str1 = t1.render();
         console.log(str1);
+        argv._callback();
     });
 };
 //# sourceMappingURL=search.js.map

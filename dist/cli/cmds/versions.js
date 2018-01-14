@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 const git_1 = require("../../lib/git");
 const npm_1 = require("../../lib/npm");
+const tools = require("../../lib/tools");
 var Table = require('tty-table');
 const semver_1 = require("semver");
 exports.command = 'versions <pkgname> [range]';
@@ -21,7 +23,6 @@ exports.builder = function (yargs) {
         describe: "'range limit"
     })
         .default('range', "*")
-        .default('range', "*")
         .option('g', {
         alias: 'g',
         describe: "'result from git website,default from npm"
@@ -29,32 +30,44 @@ exports.builder = function (yargs) {
         .default('g', false);
 };
 exports.handler = function (argv) {
-    // console.log(argv);
-    if (argv.pkgname == "")
-        return;
-    var p = null;
-    if (semver_1.validRange(argv.range)) {
-        p = argv.g
-            ? git_1.default.getVersionsByRange(argv.pkgname, argv.range, argv.limit)
-            : npm_1.default.getVersionsByRange(argv.pkgname, argv.range, argv.limit);
+    search(argv).then(res => {
+        console.log(res);
+        argv._callback();
+    }).catch(err => { });
+};
+var header = [
+    {
+        value: "num",
+        width: 10,
+        color: 'white'
+    }, {
+        value: "version"
     }
-    else {
-        p = argv.g
-            ? git_1.default.getLastVersions(argv.pkgname, argv.limit)
-            : npm_1.default.getLastVersions(argv.pkgname, argv.limit);
-    }
-    p.then(data => {
-        var header = [
-            {
-                value: "num",
-                width: 10,
-                color: 'white'
-            }, {
-                value: "version"
-            }
-        ];
+];
+function isUrl(url) {
+    return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(url);
+}
+function search(argv) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        if (argv.pkgname == "")
+            return;
+        var p = null;
+        var command = argv.g
+            ? git_1.default
+            : npm_1.default;
+        if (argv.g) {
+            if (!isUrl(argv.pkgname))
+                argv.pkgname = yield tools.getGitUrlByPackName(argv.pkgname);
+        }
+        if (semver_1.validRange(argv.range)) {
+            p = command.getVersionsByRange(argv.pkgname, argv.range, argv.limit);
+        }
+        else {
+            p = command.getLastVersions(argv.pkgname, argv.limit);
+        }
+        var versions = yield p;
         var rows = [];
-        data.forEach((obj, index) => {
+        versions.forEach((obj, index) => {
             rows.push([index, obj]);
         });
         var t1 = Table(header, rows, {
@@ -63,8 +76,7 @@ exports.handler = function (argv) {
             align: "center",
             color: "white"
         });
-        var str1 = t1.render();
-        console.log(str1);
+        return t1.render();
     });
-};
+}
 //# sourceMappingURL=versions.js.map

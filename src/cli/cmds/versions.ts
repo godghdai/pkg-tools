@@ -1,5 +1,7 @@
 import git from "../../lib/git";
 import npm from "../../lib/npm";
+import * as tools from "../../lib/tools";
+
 var Table = require('tty-table');
 import {validRange} from 'semver';
 
@@ -23,7 +25,6 @@ exports.builder = function (yargs : any) {
       describe: "'range limit"
     })
     .default('range', "*")
-    .default('range', "*")
     .option('g', {
       alias: 'g',
       describe: "'result from git website,default from npm"
@@ -32,48 +33,60 @@ exports.builder = function (yargs : any) {
 }
 
 exports.handler = function (argv : any) {
+  search(argv).then(res => {
+    console.log(res);
+    argv._callback();
+  }).catch(err => {})
+}
 
-  // console.log(argv);
-  if (argv.pkgname == "")
+var header = [
+  {
+    value: "num",
+    width: 10,
+    color: 'white'
+  }, {
+    value: "version"
+  }
+];
+
+function isUrl(url : string) {
+  return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(url);
+}
+
+async function search(argv : any) : Promise < void > {
+
+  if(argv.pkgname == "")
     return;
-  var p = null;
+  var p: Promise < Array < string >> = null;
+  var command: any = argv.g
+    ? git
+    : npm;
+
+  if (argv.g) {
+    if (!isUrl(argv.pkgname))
+      argv.pkgname = await tools.getGitUrlByPackName(argv.pkgname);
+    }
 
   if (validRange(argv.range)) {
-    p = argv.g
-      ? git.getVersionsByRange(argv.pkgname, argv.range, argv.limit)
-      : npm.getVersionsByRange(argv.pkgname, argv.range, argv.limit);
+    p = command.getVersionsByRange(argv.pkgname, argv.range, argv.limit);
   } else {
-    p = argv.g
-      ? git.getLastVersions(argv.pkgname, argv.limit)
-      : npm.getLastVersions(argv.pkgname, argv.limit);
+    p = command.getLastVersions(argv.pkgname, argv.limit);
   }
 
-  p.then(data => {
+  var versions = await p;
+  var rows: any[] = [];
 
-    var header = [
-      {
-        value: "num",
-        width: 10,
-        color: 'white'
-      }, {
-        value: "version"
-      }
-    ];
+  versions.forEach((obj, index) => {
+    rows.push([index, obj]);
+  });
 
-    var rows : any[] = [];
+  var t1 = Table(header, rows, {
+    borderStyle: 2,
+    headerAlign: "center",
+    align: "center",
+    color: "white"
+  });
 
-    data.forEach((obj, index) => {
-      rows.push([index, obj]);
-    });
+  return t1.render();
 
-    var t1 = Table(header, rows, {
-      borderStyle: 2,
-      headerAlign: "center",
-      align: "center",
-      color: "white"
-    });
-
-    var str1 = t1.render();
-    console.log(str1);
-  })
 }
