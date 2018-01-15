@@ -13,7 +13,6 @@ getGitUrlByPackName("think").then(a=>{
 });
 
 
-
 import Youdao from './lib/translate/baidu'
 
 new Youdao().translate("good morning dfdfd").then(res=>{

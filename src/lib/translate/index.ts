@@ -1,7 +1,7 @@
 import baidu from "./baidu";
 import qq from "./qq";
 import youdao from "./youdao";
-import {ITranslate} from "../Interface/ITranslate";
+import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 
 const fullnames = ["baidu", "qq", "youdao"];
 
@@ -20,7 +20,11 @@ const EngineInstances : any = {
   'youdao': new youdao()
 }
 
-export function getEngineInstance(engine : string) {
-  var translate : ITranslate = null;
+export function getEngineInstance(engine : string) : ITranslate {
+  var translate: ITranslate = null;
   return EngineInstances[getFullName(engine)];
+}
+
+export async function translate(word : string, engine : string) : Promise < ITranslateResult > {
+  return getEngineInstance(engine).translate(word);
 }

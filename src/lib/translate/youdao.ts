@@ -1,8 +1,8 @@
 import * as rp from 'request-promise';
 import http = require('http');
 import * as request from 'request';
-import {md5} from './md5';
-import {FileCookieStore} from './file-store';
+import {md5} from '../../../jslib/md5';
+import {FileCookieStore} from '../../../jslib/file-store';
 
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const table = require("tty-table");
 const npm_1 = require("../../lib/npm");
-var Table = require('tty-table');
 exports.command = 'search <pkgname>';
 exports.aliases = ['s'];
 exports.describe = 'search package name';
@@ -36,14 +36,13 @@ exports.handler = function (argv) {
         data2.forEach(obj => {
             rows.push([obj.name, obj.desc, obj.git, obj.npm]);
         });
-        var t1 = Table(header, rows, {
+        var t1 = table(header, rows, {
             borderStyle: 2,
             headerAlign: "center",
             align: "center",
             color: "white"
         });
-        var str1 = t1.render();
-        console.log(str1);
+        console.log(t1.render());
         argv._callback();
     });
 };

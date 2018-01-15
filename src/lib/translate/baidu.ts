@@ -2,11 +2,11 @@ import * as rp from 'request-promise';
 import http = require('http');
 import * as request from 'request';
 import * as fse from 'fs-extra';
-import debug from 'debug';
+import * as debug from 'debug';
 
 import {isChinese} from "../util/chinese";
 import {n as encode} from './baidu/encode';
-import {FileCookieStore} from './file-store';
+import {FileCookieStore} from '../../../jslib/file-store';
 
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 

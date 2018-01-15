@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 const baidu_1 = require("./baidu");
 const qq_1 = require("./qq");
 const youdao_1 = require("./youdao");
@@ -22,4 +23,10 @@ function getEngineInstance(engine) {
     return EngineInstances[getFullName(engine)];
 }
 exports.getEngineInstance = getEngineInstance;
+function translate(word, engine) {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+        return getEngineInstance(engine).translate(word);
+    });
+}
+exports.translate = translate;
 //# sourceMappingURL=index.js.map

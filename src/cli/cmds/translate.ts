@@ -1,6 +1,5 @@
-const chalk = require('chalk');
-var Table = require('tty-table');
-import {getEngineInstance} from '../../lib/translate/index';
+import chalk from 'chalk';
+import {translate} from '../../lib/translate/index';
 
 exports.command = 'translate <word>';
 
@@ -24,8 +23,7 @@ exports.handler = function (argv : any) {
   if (argv.word == "")
     return;
 
-  getEngineInstance(argv.e)
-    .translate(argv.word)
+    translate(argv.word,argv.e)
     .then(data => {
       console.log(data.to);
       argv._callback();

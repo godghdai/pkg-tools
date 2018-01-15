@@ -1,14 +1,12 @@
+import * as table from "tty-table";
+import {validRange} from 'semver';
+
 import git from "../../lib/git";
 import npm from "../../lib/npm";
 import * as tools from "../../lib/tools";
 
-var Table = require('tty-table');
-import {validRange} from 'semver';
-
 exports.command = 'versions <pkgname> [range]';
-
 exports.aliases = ['ver', 'v'];
-
 exports.describe = 'get the package versions';
 
 exports.builder = function (yargs : any) {
@@ -53,7 +51,7 @@ function isUrl(url : string) {
   return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(url);
 }
 
-async function search(argv : any) : Promise < void > {
+async function search(argv : any) : Promise < string > {
 
   if(argv.pkgname == "")
     return;
@@ -80,7 +78,7 @@ async function search(argv : any) : Promise < void > {
     rows.push([index, obj]);
   });
 
-  var t1 = Table(header, rows, {
+  var t1 = table(header, rows, {
     borderStyle: 2,
     headerAlign: "center",
     align: "center",

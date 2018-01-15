@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const rp = require("request-promise");
-const md5_1 = require("./md5");
-const file_store_1 = require("./file-store");
+const md5_1 = require("../../../jslib/md5");
+const file_store_1 = require("../../../jslib/file-store");
 const headers_1 = require("./common/headers");
 class Youdao {
     constructor(cookies_save_path = "youdao_cookies.json") {

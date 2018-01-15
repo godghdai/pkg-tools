@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
+const table = require("tty-table");
+const semver_1 = require("semver");
 const git_1 = require("../../lib/git");
 const npm_1 = require("../../lib/npm");
 const tools = require("../../lib/tools");
-var Table = require('tty-table');
-const semver_1 = require("semver");
 exports.command = 'versions <pkgname> [range]';
 exports.aliases = ['ver', 'v'];
 exports.describe = 'get the package versions';
@@ -70,7 +70,7 @@ function search(argv) {
         versions.forEach((obj, index) => {
             rows.push([index, obj]);
         });
-        var t1 = Table(header, rows, {
+        var t1 = table(header, rows, {
             borderStyle: 2,
             headerAlign: "center",
             align: "center",

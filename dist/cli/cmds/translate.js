@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const chalk = require('chalk');
-var Table = require('tty-table');
+const chalk_1 = require("chalk");
 const index_1 = require("../../lib/translate/index");
 exports.command = 'translate <word>';
 exports.aliases = ['t'];
@@ -19,14 +18,13 @@ exports.builder = function (yargs) {
 exports.handler = function (argv) {
     if (argv.word == "")
         return;
-    index_1.getEngineInstance(argv.e)
-        .translate(argv.word)
+    index_1.translate(argv.word, argv.e)
         .then(data => {
         console.log(data.to);
         argv._callback();
     })
         .catch(ex => {
-        console.log(chalk.red("not find!!"));
+        console.log(chalk_1.default.red("not find!!"));
         argv._callback();
     });
 };
