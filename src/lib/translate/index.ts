@@ -1,28 +1,25 @@
-import baidu from "./baidu";
-import qq from "./qq";
-import youdao from "./youdao";
+import config from '../../config';
+const {TRANSLATE_ENGINES, TRANSLATE_ENGINE_SELECT_DEFAULT} = config;
+
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
 
-const fullnames = ["baidu", "qq", "youdao"];
-
 function getFullName(engine : string) {
-  var index = fullnames.findIndex(name => {
-    return name.charAt(0) == engine;
-  })
+  var index = TRANSLATE_ENGINES.findIndex(name => name.charAt(0) == engine);
   if (index != -1)
-    return fullnames[index];
-  return "youdao";
+    return TRANSLATE_ENGINES[index];
+  return TRANSLATE_ENGINE_SELECT_DEFAULT;
 }
 
-const EngineInstances : any = {
-  'baidu': new baidu(),
-  'qq': new qq(),
-  'youdao': new youdao()
-}
+let EngineInstances : Map < string,
+  ITranslate >= new Map();
 
 export function getEngineInstance(engine : string) : ITranslate {
-  var translate: ITranslate = null;
-  return EngineInstances[getFullName(engine)];
+  let fullname = getFullName(engine);
+  if (!EngineInstances.has(fullname)) {
+    let cls = require(`./engine/${fullname}`).default;
+    EngineInstances.set(fullname, new cls());
+  }
+  return EngineInstances.get(fullname);
 }
 
 export async function translate(word : string, engine : string) : Promise < ITranslateResult > {

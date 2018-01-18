@@ -1,9 +1,9 @@
-import * as rp from 'request-promise';
+import rp, {getJson} from '../../request';
 import http = require('http');
-import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
-import {isChinese} from "../util/chinese";
+import {ITranslate, ITranslateResult} from "../../Interface/ITranslate";
+import {isChinese} from "../../util/chinese";
 
-import {QQ_HEADERS_SIMPLE} from "./common/headers";
+import {QQ_HEADERS_SIMPLE} from "../common/headers";
 
 export default class QQ implements ITranslate {
 
@@ -15,7 +15,7 @@ export default class QQ implements ITranslate {
     const from = Number(!isChinese(keyword));
     const to = Number(!from);
 
-    var result = await rp({
+    var result = await getJson({
       method: 'POST',
       uri: 'http://m.fanyi.qq.com/translate',
       form: {
@@ -27,8 +27,7 @@ export default class QQ implements ITranslate {
         'longitude': 1,
         'platform': 'H5'
       },
-      headers: QQ_HEADERS_SIMPLE,
-      transform: (body : any, res : http.IncomingMessage) => JSON.parse(body)
+      headers: QQ_HEADERS_SIMPLE
     });
     return this.convertToResult(result);
   }

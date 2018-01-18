@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const rp = require("request-promise");
+const request_1 = require("./request");
 const semver_1 = require("semver");
 const which = require("which");
 const cmd_1 = require("./cmd");
-const constant_1 = require("./common/constant");
+const config_1 = require("../config");
+const { NPM_REGISTRY_URL, NPM_SEARCH_URL, RESULT_LIST_LIMIT_DEFAULT } = config_1.default;
 function getNpmCmd() {
     var cmds = ["cnpm", "npm"];
     var index = cmds.findIndex((value, index, arr) => !!which.sync(value, { nothrow: true }));
@@ -17,23 +18,20 @@ function getNpmCmd() {
 const npmCmd = cmd_1.getCmdInstance(getNpmCmd());
 class Npm {
     getPackageJson(packageName) {
-        var res = rp({
-            url: `${constant_1.NPM_REGISTRY_URL}/${packageName}`,
+        var res = request_1.getJson({
+            url: `${NPM_REGISTRY_URL}/${packageName}`,
             headers: {
-                "user-agent": "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHT" +
-                    "ML, like Gecko) Chrome/63.0.3239.84 Mobile Safari/537.36",
                 'Host': 'registry.cnpmjs.org'
-            },
-            transform: (body, res) => JSON.parse(body)
+            }
         });
         return res;
     }
-    lastVersions(json, limit = 10) {
+    lastVersions(json, limit) {
         return Object
             .keys(json["versions"])
             .filter(ver => semver_1.valid(ver))
             .sort(semver_1.rcompare)
-            .slice(0, limit);
+            .slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
     }
     getVersions(packageName) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -43,16 +41,18 @@ class Npm {
             // .slice(0, 10)
         });
     }
-    getLastVersions(packageName, limit = 5) {
+    getLastVersions(packageName, limit) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var data = yield this.getPackageJson(packageName);
-            return this.lastVersions(data, limit);
+            return this.lastVersions(data, limit || RESULT_LIST_LIMIT_DEFAULT);
         });
     }
-    getVersionsByRange(packageName, range, limit = 5) {
+    getVersionsByRange(packageName, range, limit) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var vers = yield this.getVersions(packageName);
-            return vers.filter(ver => semver_1.satisfies(ver, range, true)).slice(0, limit);
+            return vers
+                .filter(ver => semver_1.satisfies(ver, range, true))
+                .slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
         });
     }
     static SearchResultConvert(items) {
@@ -61,20 +61,18 @@ class Npm {
             return { name, desc, git, npm };
         });
     }
-    search(keyword, limit = 2) {
+    search(keyword, limit) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            var data = yield rp({
-                url: constant_1.NPM_SEARCH_URL,
-                headers: constant_1.DEFAULT_HTTP_HEADER,
+            var data = yield request_1.getJson({
+                url: NPM_SEARCH_URL,
                 qs: {
                     text: keyword,
                     from: 0,
-                    size: limit,
+                    size: limit || RESULT_LIST_LIMIT_DEFAULT,
                     quality: 0,
                     popularity: 3,
                     maintenance: 0
-                },
-                transform: (body, res) => JSON.parse(body)
+                }
             });
             return Npm.SearchResultConvert(data.objects);
         });

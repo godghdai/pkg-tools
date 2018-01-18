@@ -14,10 +14,4 @@ tools_1.getGitUrlByPackName("think").then(a => {
 }).catch(ex => {
     console.log(ex);
 });
-const baidu_1 = require("./lib/translate/baidu");
-new baidu_1.default().translate("good morning dfdfd").then(res => {
-    console.log(res);
-}).catch(err => {
-    console.log(err);
-});
-//# sourceMappingURL=start.js.map
+//# sourceMappingURL=test.js.map

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chalk_1 = require("chalk");
-const index_1 = require("../../lib/translate/index");
+const translate_1 = require("../../lib/translate");
 exports.command = 'translate <word>';
 exports.aliases = ['t'];
 exports.describe = 'translate the word';
@@ -18,7 +18,7 @@ exports.builder = function (yargs) {
 exports.handler = function (argv) {
     if (argv.word == "")
         return;
-    index_1.translate(argv.word, argv.e)
+    translate_1.translate(argv.word, argv.e)
         .then(data => {
         console.log(data.to);
         argv._callback();

@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const table = require("tty-table");
 const npm_1 = require("../../lib/npm");
+const config_1 = require("../../config");
+const { RESULT_LIST_LIMIT_DEFAULT } = config_1.default;
 exports.command = 'search <pkgname>';
 exports.aliases = ['s'];
 exports.describe = 'search package name';
@@ -13,7 +15,7 @@ exports.builder = function (yargs) {
         alias: 'l',
         describe: "'result limit"
     })
-        .default('limit', 2);
+        .default('limit', RESULT_LIST_LIMIT_DEFAULT);
 };
 exports.handler = function (argv) {
     if (argv.pkgname == "")

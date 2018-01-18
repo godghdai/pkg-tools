@@ -1,12 +1,12 @@
-import * as rp from 'request-promise';
+import rp, {getJson, cookieJar} from '../../request';
 import http = require('http');
 import * as request from 'request';
-import {md5} from '../../../jslib/md5';
-import {FileCookieStore} from '../../../jslib/file-store';
+import {md5} from '../../../../jslib/md5';
+import {FileCookieStore} from '../../../../jslib/file-store';
 
-import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
+import {ITranslate, ITranslateResult} from "../../Interface/ITranslate";
 
-import {YOUDAO_HEADERS_SIMPLE,YOUDAO_HEADERS_FORM} from "./common/headers";
+import {YOUDAO_HEADERS_SIMPLE,YOUDAO_HEADERS_FORM} from "../common/headers";
 
 export default class Youdao implements ITranslate {
 
@@ -18,7 +18,7 @@ export default class Youdao implements ITranslate {
   constructor(cookies_save_path:string="youdao_cookies.json"){
 
     this.store  = new FileCookieStore(cookies_save_path);
-    this.cookiejar = rp.jar(this.store );
+    this.cookiejar =cookieJar(this.store );
   }
 
   static getSaltSign(keyword : string) {
@@ -43,7 +43,7 @@ export default class Youdao implements ITranslate {
     }
 
     var {salt, sign} = Youdao.getSaltSign(keyword);
-    var result = await rp({
+    var result = await getJson({
       method: 'POST',
       uri: 'http://fanyi.youdao.com/translate_o',
       jar: cookiejar,
@@ -64,8 +64,7 @@ export default class Youdao implements ITranslate {
         'action': 'FY_BY_CLICKBUTTION',
         'typoResult': false
       },
-      headers: YOUDAO_HEADERS_FORM,
-      transform: (body : any, res : http.IncomingMessage) => JSON.parse(body)
+      headers: YOUDAO_HEADERS_FORM
     });
     return this.convertToResult(result["translateResult"]);
   }

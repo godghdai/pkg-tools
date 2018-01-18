@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const rp = require("request-promise");
-const md5_1 = require("../../../jslib/md5");
-const file_store_1 = require("../../../jslib/file-store");
-const headers_1 = require("./common/headers");
+const request_1 = require("../../request");
+const md5_1 = require("../../../../jslib/md5");
+const file_store_1 = require("../../../../jslib/file-store");
+const headers_1 = require("../common/headers");
 class Youdao {
     constructor(cookies_save_path = "youdao_cookies.json") {
         this.store = new file_store_1.FileCookieStore(cookies_save_path);
-        this.cookiejar = rp.jar(this.store);
+        this.cookiejar = request_1.cookieJar(this.store);
     }
     static getSaltSign(keyword) {
         var salt = "" + ((new Date).getTime() + parseInt((10 * Math.random()).toString(), 10));
@@ -26,10 +26,10 @@ class Youdao {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var cookiejar = this.cookiejar;
             if (this.store.isExpired() || this.store.isEmpty()) {
-                yield rp({ method: 'GET', uri: 'http://fanyi.youdao.com/', jar: cookiejar, headers: headers_1.YOUDAO_HEADERS_SIMPLE });
+                yield request_1.default({ method: 'GET', uri: 'http://fanyi.youdao.com/', jar: cookiejar, headers: headers_1.YOUDAO_HEADERS_SIMPLE });
             }
             var { salt, sign } = Youdao.getSaltSign(keyword);
-            var result = yield rp({
+            var result = yield request_1.getJson({
                 method: 'POST',
                 uri: 'http://fanyi.youdao.com/translate_o',
                 jar: cookiejar,
@@ -50,8 +50,7 @@ class Youdao {
                     'action': 'FY_BY_CLICKBUTTION',
                     'typoResult': false
                 },
-                headers: headers_1.YOUDAO_HEADERS_FORM,
-                transform: (body, res) => JSON.parse(body)
+                headers: headers_1.YOUDAO_HEADERS_FORM
             });
             return this.convertToResult(result["translateResult"]);
         });

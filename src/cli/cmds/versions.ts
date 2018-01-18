@@ -5,6 +5,10 @@ import git from "../../lib/git";
 import npm from "../../lib/npm";
 import * as tools from "../../lib/tools";
 
+import config from '../../config';
+const {RESULT_LIST_LIMIT_DEFAULT} = config;
+
+
 exports.command = 'versions <pkgname> [range]';
 exports.aliases = ['ver', 'v'];
 exports.describe = 'get the package versions';
@@ -17,7 +21,7 @@ exports.builder = function (yargs : any) {
       alias: 'l',
       describe: "'result limit"
     })
-    .default('limit', 5)
+    .default('limit', RESULT_LIST_LIMIT_DEFAULT)
     .option('range', {
       alias: 'r',
       describe: "'range limit"

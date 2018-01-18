@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const rp = require("request-promise");
+const request_1 = require("./request");
 const semver_1 = require("semver");
+const config_1 = require("../config");
+const { GITHUB_REPOSITORIES_URL, RESULT_LIST_LIMIT_DEFAULT } = config_1.default;
 const cmd_1 = require("./cmd");
 const revs_1 = require("./util/git/revs");
-const constant_1 = require("./common/constant");
 const gitCmd = cmd_1.getCmdInstance("git");
 class Git {
     getVersions(remote, ref = true) {
@@ -21,16 +22,18 @@ class Git {
                 : ver);
         });
     }
-    getVersionsByRange(remote, range, limit = 5) {
+    getVersionsByRange(remote, range, limit) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var vers = yield this.getVersions(remote);
-            return vers.filter(ver => semver_1.satisfies(ver, range, true)).slice(0, limit);
+            return vers
+                .filter(ver => semver_1.satisfies(ver, range, true))
+                .slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
         });
     }
-    getLastVersions(remote, limit = 10) {
+    getLastVersions(remote, limit) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var data = yield this.getVersions(remote);
-            return data.slice(0, limit);
+            return data.slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
         });
     }
     clone(remote, path = "") {
@@ -40,26 +43,22 @@ class Git {
         });
     }
     static SearchResultConvert(items) {
-        //_.pick(el, ["name", "full_name", "description", "clone_url", "homepage"]);
         return items.map(item => {
-            let npm = "";
             const { full_name: name, description: desc, clone_url: git } = item;
-            return { name, desc, git, npm };
+            return { name, desc, git, npm: "" };
         });
     }
-    search(keyword, limit = 2) {
+    search(keyword, limit) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            var data = yield rp({
-                url: constant_1.GITHUB_REPOSITORIES_URL,
-                headers: constant_1.DEFAULT_HTTP_HEADER,
+            var data = yield request_1.getJson({
+                url: GITHUB_REPOSITORIES_URL,
                 qs: {
                     q: `${keyword} language:javascript`,
                     sort: "stars",
                     order: "desc",
-                    per_page: limit,
+                    per_page: limit || RESULT_LIST_LIMIT_DEFAULT,
                     page: 1
-                },
-                transform: (body, res) => JSON.parse(body)
+                }
             });
             return Git.SearchResultConvert(data.items);
         });

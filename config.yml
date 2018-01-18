@@ -1,0 +1,14 @@
+NPM_REGISTRY_URL: http://registry.cnpmjs.org
+NPM_SEARCH_URL: https://www.npmjs.com/-/search
+GITHUB_REPOSITORIES_URL: https://api.github.com/search/repositories
+
+TRANSLATE_ENGINES: [baidu,qq,youdao]
+
+PACKAGE_CMDS:
+ - cnpm
+ - npm
+
+PACKAGE_CMDS_SELECT_DEFAULT: cnpm
+TRANSLATE_ENGINE_SELECT_DEFAULT: youdao
+RESULT_LIST_LIMIT_DEFAULT: 5
+COOKIES_SAVE_PATH_DEFAULT: ./data

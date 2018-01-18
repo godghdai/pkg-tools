@@ -1,30 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const baidu_1 = require("./baidu");
-const qq_1 = require("./qq");
-const youdao_1 = require("./youdao");
-const fullnames = ["baidu", "qq", "youdao"];
+const config_1 = require("../../config");
+const { TRANSLATE_ENGINES, TRANSLATE_ENGINE_SELECT_DEFAULT } = config_1.default;
+
 function getFullName(engine) {
-    var index = fullnames.findIndex(name => {
-        return name.charAt(0) == engine;
-    });
+    var index = TRANSLATE_ENGINES.findIndex(name => name.charAt(0) == engine);
     if (index != -1)
-        return fullnames[index];
-    return "youdao";
+        return TRANSLATE_ENGINES[index];
+    return TRANSLATE_ENGINE_SELECT_DEFAULT;
 }
-const EngineInstances = {
-    'baidu': new baidu_1.default(),
-    'qq': new qq_1.default(),
-    'youdao': new youdao_1.default()
-};
+let EngineInstances = new Map();
+
 function getEngineInstance(engine) {
-    var translate = null;
-    return EngineInstances[getFullName(engine)];
+    let fullname = getFullName(engine);
+    console.log(engine, fullname);
+    if (!EngineInstances.has(fullname)) {
+        let cls = require(`./engine/${fullname}`).default;
+        EngineInstances.set(fullname, new cls());
+    }
+    return EngineInstances.get(fullname);
 }
 exports.getEngineInstance = getEngineInstance;
+
 function translate(word, engine) {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function*() {
         return getEngineInstance(engine).translate(word);
     });
 }

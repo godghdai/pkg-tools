@@ -1,17 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const rp = require("request-promise");
+const request_1 = require("../../request");
 const fse = require("fs-extra");
-const chinese_1 = require("../util/chinese");
+const chinese_1 = require("../../util/chinese");
 const encode_1 = require("./baidu/encode");
-const file_store_1 = require("../../../jslib/file-store");
-const headers_1 = require("./common/headers");
+const file_store_1 = require("../../../../jslib/file-store");
+const headers_1 = require("../common/headers");
 const BAIDU_CONFIG_PATH = './baidu_gtk_token.config';
 class Baidu {
     constructor(cookies_save_path = "baidu_cookies.json") {
         this.store = new file_store_1.FileCookieStore(cookies_save_path);
-        this.cookiejar = rp.jar(this.store);
+        this.cookiejar = request_1.cookieJar(this.store);
     }
     convertToResult(json) {
         var obj = json.data[0];
@@ -23,9 +23,8 @@ class Baidu {
             var cookiejar = this.cookiejar;
             if (this.store.isExpired() || this.store.isEmpty() || !exists) {
                 console.log("update...");
-                yield rp({ method: 'GET', uri: 'http://fanyi.baidu.com', jar: cookiejar, headers: headers_1.BAIDU_HEADERS_SIMPLE });
-                var gtk_token_config = yield rp({
-                    method: 'GET',
+                yield request_1.default({ method: 'GET', uri: 'http://fanyi.baidu.com', jar: cookiejar, headers: headers_1.BAIDU_HEADERS_SIMPLE });
+                var gtk_token_config = yield request_1.default({
                     jar: cookiejar,
                     uri: 'http://fanyi.baidu.com/#zh/en/%E4%B8%AD%E5%9B%BDg',
                     transform: (body, res) => {
@@ -50,7 +49,7 @@ class Baidu {
             const to = from == "zh"
                 ? "en"
                 : "zh";
-            var result = yield rp({
+            var result = yield request_1.getJson({
                 method: 'POST',
                 uri: 'http://fanyi.baidu.com/v2transapi',
                 jar: this.cookiejar,
@@ -64,8 +63,7 @@ class Baidu {
                     'sign': encode_1.n(keyword, gtk_token_config.gtk),
                     'token': gtk_token_config.token
                 },
-                headers: headers_1.BAIDU_HEADERS_SIMPLE_FORM,
-                transform: (body, res) => JSON.parse(body)
+                headers: headers_1.BAIDU_HEADERS_SIMPLE_FORM
             });
             return this.convertToResult(result["trans_result"]);
         });

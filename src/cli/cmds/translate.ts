@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import {translate} from '../../lib/translate/index';
+import {translate} from '../../lib/translate';
+
 
 exports.command = 'translate <word>';
 

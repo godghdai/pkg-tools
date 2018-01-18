@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const rp = require("request-promise");
-const chinese_1 = require("../util/chinese");
-const headers_1 = require("./common/headers");
+const request_1 = require("../../request");
+const chinese_1 = require("../../util/chinese");
+const headers_1 = require("../common/headers");
 class QQ {
     convertToResult(json) {
         return { from: json.sourceText, to: json.targetText };
@@ -12,7 +12,7 @@ class QQ {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const from = Number(!chinese_1.isChinese(keyword));
             const to = Number(!from);
-            var result = yield rp({
+            var result = yield request_1.getJson({
                 method: 'POST',
                 uri: 'http://m.fanyi.qq.com/translate',
                 form: {
@@ -24,8 +24,7 @@ class QQ {
                     'longitude': 1,
                     'platform': 'H5'
                 },
-                headers: headers_1.QQ_HEADERS_SIMPLE,
-                transform: (body, res) => JSON.parse(body)
+                headers: headers_1.QQ_HEADERS_SIMPLE
             });
             return this.convertToResult(result);
         });

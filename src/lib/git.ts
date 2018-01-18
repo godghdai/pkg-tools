@@ -1,12 +1,13 @@
 import * as _ from 'lodash';
-import * as rp from 'request-promise';
+import {getJson} from './request';
 import {valid, rcompare, satisfies} from 'semver';
+
+import config from '../config';
+const {GITHUB_REPOSITORIES_URL, RESULT_LIST_LIMIT_DEFAULT} = config;
 
 import {getCmdInstance} from "./cmd";
 import {revsParse} from "./util/git/revs";
 import {urlParse} from "./util/git/url";
-
-import {DEFAULT_HTTP_HEADER, GITHUB_REPOSITORIES_URL} from "./common/constant";
 
 import {IQueryablePackageInfo, PackageInfo} from "./Interface/IQueryable";
 
@@ -25,14 +26,18 @@ class Git implements IQueryablePackageInfo {
         : ver);
   }
 
-  async getVersionsByRange(remote : string, range : string,limit:number=5) : Promise < string[] > {
+  async getVersionsByRange(remote : string, range : string, limit?: number) : Promise < string[] > {
     var vers = await this.getVersions(remote);
-    return vers.filter(ver => satisfies(ver, range, true)).slice(0, limit);
+    return vers
+      .filter(ver => satisfies(ver, range, true))
+      .slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
   }
 
-  async getLastVersions(remote : string, limit : number = 10) {
+  async getLastVersions(remote : string, limit
+    ?
+    : number) {
     var data = await this.getVersions(remote);
-    return data.slice(0, limit);
+    return data.slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
   }
 
   async clone(remote : string, path : string = "") : Promise < boolean > {
@@ -41,26 +46,22 @@ class Git implements IQueryablePackageInfo {
   }
 
   private static SearchResultConvert(items : any[]) : PackageInfo[] {
-    //_.pick(el, ["name", "full_name", "description", "clone_url", "homepage"]);
     return items.map < PackageInfo > (item => {
-      let npm = "";
       const {full_name: name, description: desc, clone_url: git} = item;
-      return {name, desc, git, npm};
+      return {name, desc, git, npm: ""};
     });
   }
 
-  async search(keyword : string, limit = 2) : Promise < PackageInfo[] > {
-    var data = await rp({
+  async search(keyword : string, limit?: number) : Promise < PackageInfo[] > {
+    var data = await getJson({
       url: GITHUB_REPOSITORIES_URL,
-      headers: DEFAULT_HTTP_HEADER,
       qs: {
         q: `${keyword} language:javascript`,
         sort: "stars",
         order: "desc",
-        per_page: limit,
+        per_page: limit || RESULT_LIST_LIMIT_DEFAULT,
         page: 1
-      },
-      transform: (body, res) => JSON.parse(body)
+      }
     });
     return Git.SearchResultConvert(data.items);
   }

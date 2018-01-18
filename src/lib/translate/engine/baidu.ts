@@ -1,16 +1,16 @@
-import * as rp from 'request-promise';
+import rp, {getJson, cookieJar} from '../../request';
 import http = require('http');
 import * as request from 'request';
 import * as fse from 'fs-extra';
 import * as debug from 'debug';
 
-import {isChinese} from "../util/chinese";
+import {isChinese} from "../../util/chinese";
 import {n as encode} from './baidu/encode';
-import {FileCookieStore} from '../../../jslib/file-store';
+import {FileCookieStore} from '../../../../jslib/file-store';
 
-import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
+import {ITranslate, ITranslateResult} from "../../Interface/ITranslate";
 
-import {BAIDU_HEADERS_SIMPLE, BAIDU_HEADERS_SIMPLE_PARMS, BAIDU_HEADERS_SIMPLE_FORM} from "./common/headers";
+import {BAIDU_HEADERS_SIMPLE, BAIDU_HEADERS_SIMPLE_PARMS, BAIDU_HEADERS_SIMPLE_FORM} from "../common/headers";
 
 const BAIDU_CONFIG_PATH = './baidu_gtk_token.config';
 
@@ -21,7 +21,7 @@ export default class Baidu implements ITranslate {
   constructor(cookies_save_path : string = "baidu_cookies.json") {
 
     this.store = new FileCookieStore(cookies_save_path);
-    this.cookiejar = rp.jar(this.store);
+    this.cookiejar = cookieJar(this.store);
   }
 
   convertToResult(json : any) : ITranslateResult {
@@ -36,10 +36,9 @@ export default class Baidu implements ITranslate {
       console.log("update...");
       await rp({method: 'GET', uri: 'http://fanyi.baidu.com', jar: cookiejar, headers: BAIDU_HEADERS_SIMPLE});
       var gtk_token_config = await rp({
-        method: 'GET',
         jar: cookiejar,
         uri: 'http://fanyi.baidu.com/#zh/en/%E4%B8%AD%E5%9B%BDg',
-        transform:(body : any, res : http.IncomingMessage)=>{
+        transform: (body : any, res : http.IncomingMessage) => {
           return {
             'gtk': body.match(/window.gtk = '(.*)'/)[1],
             'token': body.match(/token: '(.*)',/)[1]
@@ -61,7 +60,7 @@ export default class Baidu implements ITranslate {
       ? "en"
       : "zh";
 
-    var result = await rp({
+    var result = await getJson({
       method: 'POST',
       uri: 'http://fanyi.baidu.com/v2transapi',
       jar: this.cookiejar,
@@ -75,8 +74,7 @@ export default class Baidu implements ITranslate {
         'sign': encode(keyword, gtk_token_config.gtk),
         'token': gtk_token_config.token
       },
-      headers: BAIDU_HEADERS_SIMPLE_FORM,
-      transform:  (body : any, res : http.IncomingMessage)=>JSON.parse(body)
+      headers: BAIDU_HEADERS_SIMPLE_FORM
     });
     return this.convertToResult(result["trans_result"]);
 

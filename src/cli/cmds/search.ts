@@ -4,6 +4,9 @@ import {validRange} from 'semver';
 import git from "../../lib/git";
 import npm from "../../lib/npm";
 
+import config from '../../config';
+const {RESULT_LIST_LIMIT_DEFAULT} = config;
+
 exports.command = 'search <pkgname>';
 exports.aliases = ['s'];
 exports.describe = 'search package name';
@@ -16,7 +19,7 @@ exports.builder = function (yargs : any) {
       alias: 'l',
       describe: "'result limit"
     })
-    .default('limit', 2)
+    .default('limit', RESULT_LIST_LIMIT_DEFAULT)
 }
 
 exports.handler = function (argv : any) {

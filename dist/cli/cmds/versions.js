@@ -6,6 +6,8 @@ const semver_1 = require("semver");
 const git_1 = require("../../lib/git");
 const npm_1 = require("../../lib/npm");
 const tools = require("../../lib/tools");
+const config_1 = require("../../config");
+const { RESULT_LIST_LIMIT_DEFAULT } = config_1.default;
 exports.command = 'versions <pkgname> [range]';
 exports.aliases = ['ver', 'v'];
 exports.describe = 'get the package versions';
@@ -17,7 +19,7 @@ exports.builder = function (yargs) {
         alias: 'l',
         describe: "'result limit"
     })
-        .default('limit', 5)
+        .default('limit', RESULT_LIST_LIMIT_DEFAULT)
         .option('range', {
         alias: 'r',
         describe: "'range limit"
