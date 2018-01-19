@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-
+import config from "../config"
 import * as yargs from 'yargs';
 import * as readline from 'readline';
+
+config.load();
 
 function completer(line : any) {
   const completions = 'help error exit quit q'.split(' ');

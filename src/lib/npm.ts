@@ -1,22 +1,25 @@
 import rp, {getJson} from './request';
 import {valid, rcompare, satisfies} from 'semver';
 import * as which from 'which';
-
 import {getCmdInstance} from "./cmd";
-
-import config from '../config';
-const {NPM_REGISTRY_URL, NPM_SEARCH_URL,RESULT_LIST_LIMIT_DEFAULT} = config;
-
 import {IQueryablePackageInfo, PackageInfo} from "./Interface/IQueryable";
 
+const {NPM_REGISTRY_URL, NPM_SEARCH_URL, RESULT_LIST_LIMIT_DEFAULT, PACKAGE_CMDS_SELECT_DEFAULT} = CONFIG;
+
 function getNpmCmd() {
+  /*
   var cmds = ["cnpm", "npm"];
   var index = cmds.findIndex((value, index, arr) => !!which.sync(value, {nothrow: true}));
   if (index != -1)
     return cmds[index] + (process.platform === 'win32'
       ? ".cmd"
       : "");
-  }
+*/
+  return PACKAGE_CMDS_SELECT_DEFAULT + (process.platform === 'win32'
+    ? ".cmd"
+    : "");
+}
+
 
 const npmCmd = getCmdInstance(getNpmCmd());
 
@@ -32,12 +35,12 @@ class Npm implements IQueryablePackageInfo {
     return res;
   }
 
-  private lastVersions(json : any, limit?:number) {
+  private lastVersions(json : any, limit?: number) {
     return Object
       .keys(json["versions"])
       .filter(ver => valid(ver))
       .sort(rcompare)
-      .slice(0, limit||RESULT_LIST_LIMIT_DEFAULT)
+      .slice(0, limit || RESULT_LIST_LIMIT_DEFAULT)
   }
 
   async getVersions(packageName : string) : Promise < string[] > {
@@ -49,14 +52,14 @@ class Npm implements IQueryablePackageInfo {
 
   async getLastVersions(packageName : string, limit?: number) : Promise < string[] > {
     var data = await this.getPackageJson(packageName);
-    return this.lastVersions(data, limit||RESULT_LIST_LIMIT_DEFAULT);
+    return this.lastVersions(data, limit || RESULT_LIST_LIMIT_DEFAULT);
   }
 
   async getVersionsByRange(packageName : string, range : string, limit?: number) : Promise < string[] > {
     var vers = await this.getVersions(packageName);
     return vers
       .filter(ver => satisfies(ver, range, true))
-      .slice(0, limit||RESULT_LIST_LIMIT_DEFAULT);
+      .slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
   }
 
   private static SearchResultConvert(items : any[]) : PackageInfo[] {
@@ -73,13 +76,13 @@ class Npm implements IQueryablePackageInfo {
     });
   }
 
-  async search(keyword : string, limit?:number) : Promise < PackageInfo[] > {
+  async search(keyword : string, limit?: number) : Promise < PackageInfo[] > {
     var data = await getJson({
       url: NPM_SEARCH_URL,
       qs: {
         text: keyword,
         from: 0,
-        size: limit||RESULT_LIST_LIMIT_DEFAULT,
+        size: limit || RESULT_LIST_LIMIT_DEFAULT,
         quality: 0,
         popularity: 3,
         maintenance: 0

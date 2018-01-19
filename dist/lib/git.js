@@ -3,10 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const request_1 = require("./request");
 const semver_1 = require("semver");
-const config_1 = require("../config");
-const { GITHUB_REPOSITORIES_URL, RESULT_LIST_LIMIT_DEFAULT } = config_1.default;
 const cmd_1 = require("./cmd");
 const revs_1 = require("./util/git/revs");
+const { GITHUB_REPOSITORIES_URL, RESULT_LIST_LIMIT_DEFAULT } = CONFIG;
 const gitCmd = cmd_1.getCmdInstance("git");
 class Git {
     getVersions(remote, ref = true) {

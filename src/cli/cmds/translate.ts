@@ -1,11 +1,8 @@
 import chalk from 'chalk';
 import {translate} from '../../lib/translate';
 
-
 exports.command = 'translate <word>';
-
 exports.aliases = ['t'];
-
 exports.describe = 'translate the word';
 
 exports.builder = function (yargs : any) {
@@ -17,7 +14,6 @@ exports.builder = function (yargs : any) {
       choices: ['b', 'q', 'y']
     })
     .default('engine', 'y')
-
 }
 
 exports.handler = function (argv : any) {

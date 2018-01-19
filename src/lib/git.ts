@@ -1,15 +1,11 @@
 import * as _ from 'lodash';
 import {getJson} from './request';
 import {valid, rcompare, satisfies} from 'semver';
-
-import config from '../config';
-const {GITHUB_REPOSITORIES_URL, RESULT_LIST_LIMIT_DEFAULT} = config;
-
 import {getCmdInstance} from "./cmd";
 import {revsParse} from "./util/git/revs";
 import {urlParse} from "./util/git/url";
-
 import {IQueryablePackageInfo, PackageInfo} from "./Interface/IQueryable";
+const {GITHUB_REPOSITORIES_URL, RESULT_LIST_LIMIT_DEFAULT} = CONFIG;
 
 const gitCmd = getCmdInstance("git");
 
@@ -33,9 +29,7 @@ class Git implements IQueryablePackageInfo {
       .slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
   }
 
-  async getLastVersions(remote : string, limit
-    ?
-    : number) {
+  async getLastVersions(remote : string, limit?: number) {
     var data = await this.getVersions(remote);
     return data.slice(0, limit || RESULT_LIST_LIMIT_DEFAULT);
   }

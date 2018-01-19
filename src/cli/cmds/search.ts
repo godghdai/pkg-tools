@@ -4,8 +4,7 @@ import {validRange} from 'semver';
 import git from "../../lib/git";
 import npm from "../../lib/npm";
 
-import config from '../../config';
-const {RESULT_LIST_LIMIT_DEFAULT} = config;
+const {RESULT_LIST_LIMIT_DEFAULT} = CONFIG;
 
 exports.command = 'search <pkgname>';
 exports.aliases = ['s'];

@@ -1,7 +1,5 @@
-import config from '../../config';
-const {TRANSLATE_ENGINES, TRANSLATE_ENGINE_SELECT_DEFAULT} = config;
-
 import {ITranslate, ITranslateResult} from "../Interface/ITranslate";
+const {TRANSLATE_ENGINES, TRANSLATE_ENGINE_SELECT_DEFAULT} = CONFIG;
 
 function getFullName(engine : string) {
   var index = TRANSLATE_ENGINES.findIndex(name => name.charAt(0) == engine);

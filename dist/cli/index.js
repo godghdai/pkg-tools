@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = require("../config");
 const yargs = require("yargs");
 const readline = require("readline");
+config_1.default.load();
 function completer(line) {
     const completions = 'help error exit quit q'.split(' ');
     const hits = completions.filter((c) => c.startsWith(line));

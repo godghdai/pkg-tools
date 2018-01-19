@@ -5,9 +5,7 @@ import git from "../../lib/git";
 import npm from "../../lib/npm";
 import * as tools from "../../lib/tools";
 
-import config from '../../config';
-const {RESULT_LIST_LIMIT_DEFAULT} = config;
-
+const {RESULT_LIST_LIMIT_DEFAULT} = CONFIG;
 
 exports.command = 'versions <pkgname> [range]';
 exports.aliases = ['ver', 'v'];

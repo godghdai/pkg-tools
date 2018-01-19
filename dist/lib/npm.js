@@ -3,17 +3,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const request_1 = require("./request");
 const semver_1 = require("semver");
-const which = require("which");
 const cmd_1 = require("./cmd");
-const config_1 = require("../config");
-const { NPM_REGISTRY_URL, NPM_SEARCH_URL, RESULT_LIST_LIMIT_DEFAULT } = config_1.default;
+const { NPM_REGISTRY_URL, NPM_SEARCH_URL, RESULT_LIST_LIMIT_DEFAULT, PACKAGE_CMDS_SELECT_DEFAULT } = CONFIG;
 function getNpmCmd() {
+    /*
     var cmds = ["cnpm", "npm"];
-    var index = cmds.findIndex((value, index, arr) => !!which.sync(value, { nothrow: true }));
+    var index = cmds.findIndex((value, index, arr) => !!which.sync(value, {nothrow: true}));
     if (index != -1)
-        return cmds[index] + (process.platform === 'win32'
-            ? ".cmd"
-            : "");
+      return cmds[index] + (process.platform === 'win32'
+        ? ".cmd"
+        : "");
+  */
+    return PACKAGE_CMDS_SELECT_DEFAULT + (process.platform === 'win32'
+        ? ".cmd"
+        : "");
 }
 const npmCmd = cmd_1.getCmdInstance(getNpmCmd());
 class Npm {

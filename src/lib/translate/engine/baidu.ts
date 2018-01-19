@@ -7,10 +7,11 @@ import * as debug from 'debug';
 import {isChinese} from "../../util/chinese";
 import {n as encode} from './baidu/encode';
 import {FileCookieStore} from '../../../../jslib/file-store';
-
 import {ITranslate, ITranslateResult} from "../../Interface/ITranslate";
 
 import {BAIDU_HEADERS_SIMPLE, BAIDU_HEADERS_SIMPLE_PARMS, BAIDU_HEADERS_SIMPLE_FORM} from "../common/headers";
+
+
 
 const BAIDU_CONFIG_PATH = './baidu_gtk_token.config';
 
@@ -94,3 +95,4 @@ data:
      relation: [],
      result: [Object] } ] }
  */
+
