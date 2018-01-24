@@ -35,7 +35,9 @@ exports.builder = function (yargs : any) {
 exports.handler = function (argv : any) {
   search(argv).then(res => {
     console.log(res);
-    argv._callback();
+    argv._commandComplete({
+      type: "versions"
+    });
   }).catch(err => {})
 }
 

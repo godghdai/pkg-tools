@@ -35,7 +35,7 @@ class Git implements IQueryablePackageInfo {
   }
 
   async clone(remote : string, path : string = "") : Promise < boolean > {
-    await gitCmd.runWithOutOutput(['clone', remote, path]);
+    await gitCmd.runWithOutOutput(['clone', remote]);
     return true;
   }
 
@@ -46,7 +46,7 @@ class Git implements IQueryablePackageInfo {
     });
   }
 
-  async search(keyword : string, limit?: number) : Promise < PackageInfo[] > {
+  async search(keyword : string,limit?: number,page?: number) : Promise < PackageInfo[] > {
     var data = await getJson({
       url: GITHUB_REPOSITORIES_URL,
       qs: {
@@ -54,7 +54,7 @@ class Git implements IQueryablePackageInfo {
         sort: "stars",
         order: "desc",
         per_page: limit || RESULT_LIST_LIMIT_DEFAULT,
-        page: 1
+        page: page || 1
       }
     });
     return Git.SearchResultConvert(data.items);

@@ -10,10 +10,10 @@ exports.handler = function (argv) {
         return;
     tools_1.getGitUrlByPackName(argv.packname).then(a => {
         console.log(a);
-        argv._callback();
+        argv._commandComplete();
     }).catch(ex => {
         console.log(ex);
-        argv._callback();
+        argv._commandComplete();
     });
 };
 //# sourceMappingURL=url.js.map

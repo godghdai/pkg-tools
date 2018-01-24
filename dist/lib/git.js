@@ -37,7 +37,7 @@ class Git {
     }
     clone(remote, path = "") {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield gitCmd.runWithOutOutput(['clone', remote, path]);
+            yield gitCmd.runWithOutOutput(['clone', remote]);
             return true;
         });
     }
@@ -47,7 +47,7 @@ class Git {
             return { name, desc, git, npm: "" };
         });
     }
-    search(keyword, limit) {
+    search(keyword, limit, page) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             var data = yield request_1.getJson({
                 url: GITHUB_REPOSITORIES_URL,
@@ -56,7 +56,7 @@ class Git {
                     sort: "stars",
                     order: "desc",
                     per_page: limit || RESULT_LIST_LIMIT_DEFAULT,
-                    page: 1
+                    page: page || 1
                 }
             });
             return Git.SearchResultConvert(data.items);

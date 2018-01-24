@@ -33,7 +33,9 @@ exports.builder = function (yargs) {
 exports.handler = function (argv) {
     search(argv).then(res => {
         console.log(res);
-        argv._callback();
+        argv._commandComplete({
+            type: "versions"
+        });
     }).catch(err => { });
 };
 var header = [

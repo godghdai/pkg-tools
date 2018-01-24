@@ -8,7 +8,7 @@ export interface PackageInfo {
 }
 
 export interface IQueryablePackageInfo {
-  search(keyword : string, limit?: number, page?: number, ...params : any[]) : Promise <PackageInfo[]>;
+  search(keyword : string,limit?: number, page?: number, ...params : any[]) : Promise <PackageInfo[]>;
   getVersions(packageName : string) : Promise < string[] >;
   getLastVersions(packageName : string, limit?: number) : Promise < string[] >;
   getVersionsByRange(packageName : string, range : string) : Promise < string[] >;

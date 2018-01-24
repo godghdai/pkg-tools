@@ -16,21 +16,48 @@ function completer(line) {
         line
     ];
 }
+var prev_action = null;
 //https://github.com/nodejs/node/blob/master/lib/readline.js
 var rl = readline.createInterface(process.stdin, process.stdout, completer);
 process
     .stdin
     .on('keypress', function (s, key) {
-    //console.log(key);
+    if (!key.ctrl)
+        return;
+    switch (key.name) {
+        case 'up':
+            if (prev_action != null && prev_action.type == "search") {
+                let prev = prev_action.argv.page - 1;
+                if (prev < 1)
+                    prev = 1;
+                prev_action.argv.page = prev;
+                prev_action.handler(prev_action.argv);
+            }
+            break;
+        case 'down':
+            if (prev_action != null && prev_action.type == "search") {
+                let next = prev_action.argv.page + 1;
+                prev_action.argv.page = next;
+                prev_action.handler(prev_action.argv);
+            }
+            break;
+    }
 });
 rl.setPrompt('pkg_tools> ');
 rl.prompt();
-var parse = yargs.config({
-    _callback: function () {
-        rl.prompt();
-        //console.log("load..");
+function _commandComplete(action) {
+    switch (action.type) {
+        case 'search':
+            console.log(action.playload);
+            prev_action = action;
+            break;
+        default:
+            prev_action = null;
     }
-})
+    rl.prompt();
+}
+var parse = yargs
+    .config({ _commandComplete })
     .commandDir('cmds')
     .help('h')
     .alias('h', 'help')
@@ -42,8 +69,7 @@ var parse = yargs.config({
 });
 function parseCommand(line) {
     var argv = parse.parse(line.trim());
-    //console.log(argv);
-    //.locale('zh_CN')
+    //console.log(argv); .locale('zh_CN')
 }
 parseCommand("");
 rl.on('line', function (line) {

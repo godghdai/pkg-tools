@@ -1,8 +1,7 @@
 {
-    "name": "gitclone",
+    "name": "pkg-tools",
     "version": "1.0.0",
-    "description": "",
-    "main": "start.js",
+    "description": "package manager",
     "scripts": {
         "start": "npm run serve",
         "build": "npm run build-ts && npm run tslint && npm run copy-static-assets",
@@ -15,7 +14,7 @@
     "bin": {
         "pkg": "./cli/index.js"
     },
-    "author": "",
+    "author": "godghdai",
     "license": "ISC",
     "dependencies": {
         "chalk": "^2.3.0",

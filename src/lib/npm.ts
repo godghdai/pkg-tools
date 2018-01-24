@@ -20,7 +20,6 @@ function getNpmCmd() {
     : "");
 }
 
-
 const npmCmd = getCmdInstance(getNpmCmd());
 
 class Npm implements IQueryablePackageInfo {
@@ -76,13 +75,16 @@ class Npm implements IQueryablePackageInfo {
     });
   }
 
-  async search(keyword : string, limit?: number) : Promise < PackageInfo[] > {
+  async search(keyword : string, limit?: number, page?: number) : Promise < PackageInfo[] > {
+    limit = limit || RESULT_LIST_LIMIT_DEFAULT;
+    let start = (page || 0) * limit;
+
     var data = await getJson({
       url: NPM_SEARCH_URL,
       qs: {
         text: keyword,
-        from: 0,
-        size: limit || RESULT_LIST_LIMIT_DEFAULT,
+        from: start,
+        size: limit,
         quality: 0,
         popularity: 3,
         maintenance: 0
@@ -95,9 +97,9 @@ class Npm implements IQueryablePackageInfo {
   async install(packageName : string, save : boolean, dev : boolean) {
     const args = ['install'];
     args.push(packageName)
-    if (save)
+    if (save) 
       args.push('--save')
-    if (dev)
+    if (dev) 
       args.push('--save-dev')
     await npmCmd.runWithOutOutput(args);
 

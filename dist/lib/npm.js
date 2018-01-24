@@ -64,14 +64,16 @@ class Npm {
             return { name, desc, git, npm };
         });
     }
-    search(keyword, limit) {
+    search(keyword, limit, page) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            limit = limit || RESULT_LIST_LIMIT_DEFAULT;
+            let start = (page || 0) * limit;
             var data = yield request_1.getJson({
                 url: NPM_SEARCH_URL,
                 qs: {
                     text: keyword,
-                    from: 0,
-                    size: limit || RESULT_LIST_LIMIT_DEFAULT,
+                    from: start,
+                    size: limit,
                     quality: 0,
                     popularity: 3,
                     maintenance: 0
