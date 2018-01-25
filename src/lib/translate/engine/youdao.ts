@@ -1,24 +1,24 @@
 import rp, {getJson, cookieJar} from '../../request';
 import http = require('http');
 import * as request from 'request';
-import {md5} from '../../../../jslib/md5';
-import {FileCookieStore} from '../../../../jslib/file-store';
+import {md5} from '../../../jslib/md5';
+import {FileCookieStore} from '../../../jslib/file-store';
 
 import {ITranslate, ITranslateResult} from "../../Interface/ITranslate";
 
-import {YOUDAO_HEADERS_SIMPLE,YOUDAO_HEADERS_FORM} from "../common/headers";
+import {YOUDAO_HEADERS_SIMPLE, YOUDAO_HEADERS_FORM} from "../common/headers";
 
 export default class Youdao implements ITranslate {
 
-  static KEY:string = "fanyideskweb";
-  static VALUE:string = "rY0D^0'nM0}g5Mm1z%1G4";
+  static KEY : string = "fanyideskweb";
+  static VALUE : string = "rY0D^0'nM0}g5Mm1z%1G4";
   private store : FileCookieStore;
-  private cookiejar:request.CookieJar;
+  private cookiejar : request.CookieJar;
 
-  constructor(cookies_save_path:string="youdao_cookies.json"){
+  constructor(cookies_save_path : string = "youdao_cookies.json") {
 
-    this.store  = new FileCookieStore(cookies_save_path);
-    this.cookiejar =cookieJar(this.store );
+    this.store = new FileCookieStore(cookies_save_path);
+    this.cookiejar = cookieJar(this.store);
   }
 
   static getSaltSign(keyword : string) {
@@ -29,7 +29,7 @@ export default class Youdao implements ITranslate {
     }
   }
 
-   convertToResult(json:any) : ITranslateResult {
+  convertToResult(json : any) : ITranslateResult {
     // [ [ { tgt: 'The test was Beijing', src: '测试本来京' } ] ]
     var obj = json[0][0];
     return {from: obj.src, to: obj.tgt};
@@ -37,8 +37,8 @@ export default class Youdao implements ITranslate {
 
   async translate(keyword : string) : Promise < ITranslateResult > {
 
-    var cookiejar=this.cookiejar;
-    if(this.store.isExpired() || this.store.isEmpty()) {
+    var cookiejar = this.cookiejar;
+    if (this.store.isExpired() || this.store.isEmpty()) {
       await rp({method: 'GET', uri: 'http://fanyi.youdao.com/', jar: cookiejar, headers: YOUDAO_HEADERS_SIMPLE});
     }
 
@@ -69,5 +69,3 @@ export default class Youdao implements ITranslate {
     return this.convertToResult(result["translateResult"]);
   }
 }
-
-

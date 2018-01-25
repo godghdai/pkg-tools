@@ -5,7 +5,7 @@ const request_1 = require("../../request");
 const fse = require("fs-extra");
 const chinese_1 = require("../../util/chinese");
 const encode_1 = require("./baidu/encode");
-const file_store_1 = require("../../../../jslib/file-store");
+const file_store_1 = require("../../../jslib/file-store");
 const headers_1 = require("../common/headers");
 const BAIDU_CONFIG_PATH = './baidu_gtk_token.config';
 class Baidu {

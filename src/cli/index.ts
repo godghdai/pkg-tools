@@ -2,14 +2,20 @@
 
 import config from "../config"
 import * as yargs from 'yargs';
+//https://github.com/nodejs/node/blob/master/lib/readline.js
 import * as readline from 'readline';
 
+type action = {
+  type: string,
+  argv: any,
+  handler: (args : any) => void,
+  playload: any
+}
 config.load();
-
+//提示
 function completer(line : any) {
-  const completions = 'help error exit quit q'.split(' ');
+  const completions = 'clone quit exit search url versions translate'.split(' ');
   const hits = completions.filter((c) => c.startsWith(line));
-  // show all completions if none found
   return [
     hits.length
       ? hits
@@ -18,26 +24,18 @@ function completer(line : any) {
   ];
 }
 
-type action = {
-  type: string,
-  argv: any,
-  handler: (args : any) => void,
-  playload: any
-}
-
 var prev_action : action = null;
-//https://github.com/nodejs/node/blob/master/lib/readline.js
-var rl = readline.createInterface(process.stdin, process.stdout, completer);
+//翻页按键监听
 process
   .stdin
   .on('keypress', function (s, key) {
 
-    if (!key.ctrl) 
+    if (!key.ctrl || prev_action == null) 
       return;
     
     switch (key.name) {
       case 'up':
-        if (prev_action != null && prev_action.type == "search") {
+        if (prev_action.type == "search") {
           let prev = prev_action.argv.page - 1;
           if (prev < 1) 
             prev = 1;
@@ -46,7 +44,7 @@ process
         }
         break;
       case 'down':
-        if (prev_action != null && prev_action.type == "search") {
+        if (prev_action.type == "search") {
           let next = prev_action.argv.page + 1;
           prev_action.argv.page = next;
           prev_action.handler(prev_action.argv);
@@ -56,47 +54,36 @@ process
     }
   });
 
-rl.setPrompt('pkg_tools> ');
-rl.prompt();
-
-function _commandComplete(action : action) {
-  switch (action.type) {
-    case 'search':
-      console.log(action.playload);
-      prev_action = action;
-      break;
-    default:
-      prev_action = null;
-  }
-
-  rl.prompt();
-}
-
-var parse = yargs
-  .config({_commandComplete})
-  .commandDir('cmds')
-  .help('h')
-  .alias('h', 'help')
-  .epilog('copyright by @godghdai 2017')
-  .exitProcess(false)
-  .fail((msg : any) => {
-    // msg.should.match(/Implications failed/) return done()
-    console.log(msg);
+var rl = readline.createInterface(process.stdin, process.stdout, completer),
+  parse = yargs.config({
+    _commandComplete: function (action : action) {
+      switch (action.type) {
+        case 'search':
+          console.log(action.playload);
+          prev_action = action;
+          break;
+        case 'exit':
+          rl.close();
+          break;
+        default:
+          prev_action = null;
+      }
+      rl.prompt();
+    }
   })
-function parseCommand(line : any) {
-  var argv = parse.parse(line.trim());
-  //console.log(argv); .locale('zh_CN')
+    .commandDir('cmds')
+    .help('h')
+    .alias('h', 'help')
+    .epilog('copyright by @godghdai 2017')
+    .exitProcess(false)
+    .fail((msg : any) => console.log(msg))
 
-}
-parseCommand("");
-
-rl.on('line', function (line) {
-
-  parseCommand(line);
-
-});
+rl.on('line', line => parse.parse(line.trim()));
 
 rl.on('close', function () {
   console.log('bye bye!');
   process.exit(0);
 });
+
+rl.setPrompt('pkg_tools> ');
+rl.prompt();

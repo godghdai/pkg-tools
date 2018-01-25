@@ -9,7 +9,7 @@ const {RESULT_LIST_LIMIT_DEFAULT, TRANSLATE_ENGINE_SELECT_DEFAULT} = CONFIG;
 
 exports.command = 'search <pkgname>';
 exports.aliases = ['s'];
-exports.describe = 'search package name';
+exports.describe = '从github或者npm搜索包';
 
 exports.builder = function (yargs : any) {
   return yargs
@@ -17,43 +17,27 @@ exports.builder = function (yargs : any) {
     .default('pkgname', '')
     .option('limit', {
       alias: 'l',
-      describe: "'result limit"
+      describe: "'每页显示的条目"
     })
     .default('limit', RESULT_LIST_LIMIT_DEFAULT)
     .option('g', {
       alias: 'g',
-      describe: "'result from git website,default from npm"
+      describe: "'从github搜索包，默认从npm"
     })
     .default('g', false)
     .option('page', {
       alias: 'p',
-      describe: "'page index"
+      describe: "'分页显示，第几页"
     })
     .default('page', 1)
     .option('trans', {
       alias: 't',
-      describe: "'translate the pkgname"
+      describe: "'按翻译后包名搜索，中文转英文或者英文转中文"
     })
     .default('t', false)
 }
 
-const header = [
-  {
-    value: "name"
-  }, {
-    value: "desc"
-  }, {
-    value: "git"
-  }, {
-    value: "npm"
-  }
-];
-
-exports.handler = function (argv : any) {
-  return search(argv);
-}
-
-async function search(argv : any) : Promise < string > {
+exports.handler = async(argv : any) : Promise < string >=> {
 
   if(argv.pkgname == "") 
     return;
@@ -67,7 +51,7 @@ async function search(argv : any) : Promise < string > {
 
   if (argv.trans) {
     const {to} = await translate(argv.pkgname, TRANSLATE_ENGINE_SELECT_DEFAULT.charAt(0));
-    argv.pkgname=to;
+    argv.pkgname = to;
   }
 
   command
@@ -79,7 +63,17 @@ async function search(argv : any) : Promise < string > {
         rows.push([obj.name, obj.desc, obj.git, obj.npm]);
       });
 
-      var t1 = table(header, rows, {
+      var t1 = table([
+        {
+          value: "name"
+        }, {
+          value: "desc"
+        }, {
+          value: "git"
+        }, {
+          value: "npm"
+        }
+      ], rows, {
         borderStyle: 2,
         headerAlign: "center",
         align: "center",

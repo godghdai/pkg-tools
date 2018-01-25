@@ -5,14 +5,14 @@ const {TRANSLATE_ENGINE_SELECT_DEFAULT} = CONFIG;
 
 exports.command = 'translate <word>';
 exports.aliases = ['t'];
-exports.describe = 'translate the word';
+exports.describe = '查单词';
 
 exports.builder = function (yargs : any) {
   return yargs
     .demand('word')
     .option('engine', {
       alias: 'e',
-      describe: 'choose a engine baidu|qq|youdao short b q y',
+      describe: '翻译引擎 baidu|qq|youdao short b q y',
       choices: ['b', 'q', 'y']
     })
     .default('engine', TRANSLATE_ENGINE_SELECT_DEFAULT.charAt(0))

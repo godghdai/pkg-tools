@@ -6,10 +6,11 @@ import npm from "../../lib/npm";
 import * as tools from "../../lib/tools";
 
 const {RESULT_LIST_LIMIT_DEFAULT} = CONFIG;
+const isUrl = (url : string) => /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(url);
 
 exports.command = 'versions <pkgname> [range]';
 exports.aliases = ['ver', 'v'];
-exports.describe = 'get the package versions';
+exports.describe = '查询包的版本';
 
 exports.builder = function (yargs : any) {
   return yargs
@@ -17,17 +18,17 @@ exports.builder = function (yargs : any) {
     .default('pkgname', '')
     .option('limit', {
       alias: 'l',
-      describe: "'result limit"
+      describe: "'返回的条目数"
     })
     .default('limit', RESULT_LIST_LIMIT_DEFAULT)
     .option('range', {
       alias: 'r',
-      describe: "'range limit"
+      describe: "根据条件(semver range)过滤版本列表"
     })
     .default('range', "*")
     .option('g', {
       alias: 'g',
-      describe: "'result from git website,default from npm"
+      describe: "从github获取版本，默认从npm"
     })
     .default('g', false)
 }
@@ -35,60 +36,50 @@ exports.builder = function (yargs : any) {
 exports.handler = function (argv : any) {
   search(argv).then(res => {
     console.log(res);
-    argv._commandComplete({
-      type: "versions"
-    });
+    argv._commandComplete({type: "versions"});
   }).catch(err => {})
-}
-
-var header = [
-  {
-    value: "num",
-    width: 10,
-    color: 'white'
-  }, {
-    value: "version"
-  }
-];
-
-function isUrl(url : string) {
-  return /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/.test(url);
 }
 
 async function search(argv : any) : Promise < string > {
 
-  if(argv.pkgname == "")
+  if(argv.pkgname == "") 
     return;
-  var p: Promise < Array < string >> = null;
-  var command: any = argv.g
-    ? git
-    : npm;
+  var p: Promise < Array < string >> = null,
+    command: any = argv.g
+      ? git
+      : npm;
 
   if (argv.g) {
-    if (!isUrl(argv.pkgname))
+    if (!isUrl(argv.pkgname)) 
       argv.pkgname = await tools.getGitUrlByPackName(argv.pkgname);
     }
-
+  
   if (validRange(argv.range)) {
     p = command.getVersionsByRange(argv.pkgname, argv.range, argv.limit);
   } else {
     p = command.getLastVersions(argv.pkgname, argv.limit);
   }
 
-  var versions = await p;
-  var rows: any[] = [];
+  var versions = await p,
+    rows: any[] = [];
 
   versions.forEach((obj, index) => {
     rows.push([index, obj]);
   });
 
-  var t1 = table(header, rows, {
+  return table([
+    {
+      value: "num",
+      width: 10,
+      color: 'white'
+    }, {
+      value: "version"
+    }
+  ], rows, {
     borderStyle: 2,
     headerAlign: "center",
     align: "center",
     color: "white"
-  });
-
-  return t1.render();
+  }).render();
 
 }

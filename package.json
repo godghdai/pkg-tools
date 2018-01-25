@@ -4,12 +4,13 @@
     "description": "package manager",
     "scripts": {
         "start": "npm run serve",
-        "build": "npm run build-ts && npm run tslint && npm run copy-static-assets",
+        "build": " npm run copy-jslib && npm run build-ts",
         "serve": "node dist/cli/index.js",
         "watch-node": "nodemon dist/cli/index.js",
         "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
         "build-ts": "tsc",
-        "watch-ts": "tsc -w"
+        "watch-ts": "tsc -w",
+        "copy-jslib": "ts-node copyJSlib.ts"
     },
     "bin": {
         "pkg": "./cli/index.js"
@@ -42,7 +43,10 @@
         "@types/chalk": "^2.2.0",
         "@types/debug": "^0.0.30",
         "@types/fs-extra": "^5.0.0",
+        "@types/shelljs": "^0.7.7",
         "concurrently": "^3.5.1",
+        "shelljs": "^0.7.7",
+        "ts-node": "^4.0.2",
         "nodemon": "^1.14.7",
         "typescript": "^2.6.2"
     }
