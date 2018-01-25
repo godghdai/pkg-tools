@@ -1,6 +1,6 @@
-##功能简介
-####搜索包，从github或npm搜索
-![](./serch.jpg)
+## 功能简介
+#### 搜索包，从github或npm搜索
+![](./imgs/serch.jpg)
 
 |  option | alias  | describe  |
 | ------------ | ------------ | ------------ |
@@ -9,8 +9,8 @@
 | --trans| -t |按翻译后包名搜索，中文转英文或者英文转中文 |
 | --g| -g |从github获取版本，默认从npm |
 
-####查询包版本，从github或npm获取
-![](./versions.jpg)
+#### 查询包版本，从github或npm获取
+![](./imgs/versions.jpg)
 
 |  option | alias  | describe  |
 | ------------ | ------------ | ------------ |
@@ -18,15 +18,15 @@
 | --range| -r | 根据条件(semver range)过滤版本列表 |
 | --g| -g |从github获取版本，默认从npm |
 
-####查单词
-![](./trans.jpg)
+#### 查单词
+![](./imgs/trans.jpg)
 
 |  option | alias  | describe  |
 | ------------ | ------------ | ------------ |
 | --engine |-e |翻译引擎，值为（baidu,qq,youdao首字母) |
 
-####从github克隆主包及依赖，用来批量下载源码
-![](./clone.jpg)
+#### 从github克隆主包及依赖，用来批量下载源码
+![](./imgs/clone.jpg)
 
 |  option | alias  | describe  |
 | ------------ | ------------ | ------------ |
