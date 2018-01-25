@@ -12,11 +12,15 @@
         "watch-ts": "tsc -w",
         "copy-jslib": "ts-node copyJSlib.ts"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/godghdai/pkg-tools.git"
+    },
     "bin": {
         "pkg": "./cli/index.js"
     },
     "author": "godghdai",
-    "license": "ISC",
+    "license": "MIT",
     "dependencies": {
         "chalk": "^2.3.0",
         "debug": "^3.1.0",

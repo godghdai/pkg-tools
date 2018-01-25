@@ -1,6 +1,6 @@
 ## 功能简介
 #### 搜索包，从github或npm搜索
-![](./imgs/serch.jpg)
+![](./imgs/search.jpg)
 
 |  option | alias  | describe  |
 | ------------ | ------------ | ------------ |
